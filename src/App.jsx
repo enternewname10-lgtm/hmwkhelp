@@ -22,28 +22,34 @@ export default function App() {
   // Auth state listener — create Firestore profile on first login
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        setUser(firebaseUser)
-        const ref = doc(db, 'users', firebaseUser.uid)
-        const snap = await getDoc(ref)
-        if (!snap.exists()) {
-          await setDoc(ref, {
-            displayName: firebaseUser.displayName,
-            photoURL:    firebaseUser.photoURL,
-            coins:       500,
-            totalWins:   0,
-            totalLosses: 0,
-            gamesPlayed: 0,
-            collection:  [],
-          })
+      try {
+        if (firebaseUser) {
+          setUser(firebaseUser)
+          const ref = doc(db, 'users', firebaseUser.uid)
+          const snap = await getDoc(ref)
+          if (!snap.exists()) {
+            await setDoc(ref, {
+              displayName: firebaseUser.displayName,
+              photoURL:    firebaseUser.photoURL,
+              coins:       500,
+              totalWins:   0,
+              totalLosses: 0,
+              gamesPlayed: 0,
+              collection:  [],
+            })
+          }
+          setScreen('home')
+        } else {
+          setUser(null)
+          setUserDoc(null)
+          setScreen('login')
         }
-        setScreen('home')
-      } else {
-        setUser(null)
-        setUserDoc(null)
-        setScreen('login')
+      } catch (err) {
+        console.error('Auth/Firestore error:', err)
+        alert('Setup error: ' + err.message + '\n\nMake sure Firestore is enabled in your Firebase console.')
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     })
     return unsub
   }, [])

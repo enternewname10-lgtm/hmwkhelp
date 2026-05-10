@@ -4,13 +4,13 @@ import { getFirestore } from 'firebase/firestore'
 import { getDatabase } from 'firebase/database'
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  apiKey:            'AIzaSyAUsh9BVRUVQyCoAORq38RHG7lzz6LHhMs',
+  authDomain:        'hmwk-help.firebaseapp.com',
+  projectId:         'hmwk-help',
+  storageBucket:     'hmwk-help.firebasestorage.app',
+  messagingSenderId: '520283990619',
+  appId:             '1:520283990619:web:3dbe16998b13bd12b7ad7e',
+  databaseURL:       'https://hmwk-help-default-rtdb.firebaseio.com',
 }
 
 const app = initializeApp(firebaseConfig)
