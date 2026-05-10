@@ -65,9 +65,10 @@ export default function Lobby({ user, roomCode, isHost, navigate }) {
           <div className="player-list">
             {players.map(([uid, p]) => (
               <div className="player-chip" key={uid}>
-                {p.photoURL && (
-                  <img src={p.photoURL} alt="" className="avatar" width={24} height={24} />
-                )}
+                {p.characterEmoji
+                  ? <span style={{ fontSize:20 }}>{p.characterEmoji}</span>
+                  : p.photoURL && <img src={p.photoURL} alt="" className="avatar" width={24} height={24} />
+                }
                 <span>{p.name}</span>
                 {uid === game.host && (
                   <span style={{ fontSize:11, color:'var(--gold)', fontWeight:800 }}>HOST</span>

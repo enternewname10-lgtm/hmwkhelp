@@ -3,6 +3,7 @@ import { signOut } from 'firebase/auth'
 import { ref, set, get } from 'firebase/database'
 import { auth, rtdb } from '../firebase'
 import { shuffleQuestions } from '../data/questions'
+import { findCharacter } from '../data/packs'
 
 function generateRoomCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
@@ -18,27 +19,29 @@ export default function Home({ user, userDoc, navigate }) {
   const [creating, setCreating]   = useState(false)
 
   const coins = userDoc?.coins ?? 0
+  const activeChar = userDoc?.activeCharacter ? findCharacter(userDoc.activeCharacter) : null
+
+  const myPlayerData = () => ({
+    name:           user.displayName,
+    photoURL:       user.photoURL,
+    characterEmoji: activeChar?.emoji ?? null,
+    score:          0,
+    coinsEarned:    0,
+    answers:        {},
+  })
 
   const handleCreate = async () => {
     setCreating(true)
     const code = generateRoomCode()
     const gameRef = ref(rtdb, `games/${code}`)
     await set(gameRef, {
-      host:          user.uid,
-      hostName:      user.displayName,
-      status:        'waiting',
-      currentQuestion: 0,
+      host:              user.uid,
+      hostName:          user.displayName,
+      status:            'waiting',
+      currentQuestion:   0,
       questionStartTime: null,
-      questions:     shuffleQuestions(10),
-      players: {
-        [user.uid]: {
-          name:     user.displayName,
-          photoURL: user.photoURL,
-          score:    0,
-          coinsEarned: 0,
-          answers:  {},
-        },
-      },
+      questions:         shuffleQuestions(10),
+      players: { [user.uid]: myPlayerData() },
     })
     setCreating(false)
     navigate('lobby', { roomCode: code, isHost: true })
@@ -53,15 +56,8 @@ export default function Home({ user, userDoc, navigate }) {
     const game = snap.val()
     if (game.status !== 'waiting') { setError('That game has already started.'); return }
 
-    // Add this player to the game
     const playerRef = ref(rtdb, `games/${code}/players/${user.uid}`)
-    await set(playerRef, {
-      name:     user.displayName,
-      photoURL: user.photoURL,
-      score:    0,
-      coinsEarned: 0,
-      answers:  {},
-    })
+    await set(playerRef, myPlayerData())
     navigate('lobby', { roomCode: code, isHost: false })
   }
 
@@ -89,8 +85,18 @@ export default function Home({ user, userDoc, navigate }) {
 
       {/* Welcome */}
       <div style={{ textAlign:'center', marginBottom:28 }}>
+        {activeChar && (
+          <div style={{ fontSize:56, marginBottom:4 }} title={activeChar.name}>
+            {activeChar.emoji}
+          </div>
+        )}
         <h2>Welcome back, <span className="gradient-text">{user?.displayName?.split(' ')[0]}</span>!</h2>
-        <p style={{ marginTop:4 }}>What do you want to do today?</p>
+        <p style={{ marginTop:4, color:'var(--muted)' }}>
+          {activeChar
+            ? <>Playing as <strong style={{ color:'var(--cyan)' }}>{activeChar.name}</strong> · <span style={{ cursor:'pointer', textDecoration:'underline' }} onClick={() => navigate('stats')}>Change</span></>
+            : <>No character selected · <span style={{ cursor:'pointer', color:'var(--cyan)', textDecoration:'underline' }} onClick={() => navigate('stats')}>Pick one from Stats</span></>
+          }
+        </p>
       </div>
 
       {view === 'main' && (

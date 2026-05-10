@@ -4,30 +4,30 @@ import { db } from '../firebase'
 import { packs, pullFromPack, rarityColors } from '../data/packs'
 
 export default function Market({ user, userDoc, navigate }) {
-  const [reveal,   setReveal]   = useState(null)  // { char, pack } being revealed
-  const [opening,  setOpening]  = useState(false)
-  const [message,  setMessage]  = useState('')
+  const [reveal,  setReveal]  = useState(null)   // { char, pack }
+  const [spinning, setSpinning] = useState(null) // pack being opened
+  const [message, setMessage] = useState('')
 
   const coins = userDoc?.coins ?? 0
 
   const handleBuy = async (pack) => {
     if (coins < pack.cost) { setMessage("Not enough coins! Play more games to earn coins."); return }
-    setOpening(true)
     setMessage('')
+    setSpinning(pack)
 
     const char = pullFromPack(pack)
-
     const userRef = doc(db, 'users', user.uid)
     await updateDoc(userRef, {
       coins:      increment(-pack.cost),
       collection: arrayUnion(char.id),
     })
 
-    setReveal({ char, pack })
-    setOpening(false)
+    // Let animation play for 1.8s before revealing
+    setTimeout(() => {
+      setSpinning(null)
+      setReveal({ char, pack })
+    }, 1800)
   }
-
-  const closeReveal = () => setReveal(null)
 
   return (
     <div className="screen-top">
@@ -60,7 +60,6 @@ export default function Market({ user, userDoc, navigate }) {
             <span className="pack-name" style={{ color: pack.color }}>{pack.name}</span>
             <span className="pack-cost">🪙 {pack.cost}</span>
 
-            {/* Rarity preview */}
             <div className="pack-odds">
               {pack.characters.map(c => (
                 <span
@@ -73,7 +72,6 @@ export default function Market({ user, userDoc, navigate }) {
               ))}
             </div>
 
-            {/* Characters preview */}
             <div style={{ display:'flex', gap:6, fontSize:22, margin:'6px 0' }}>
               {pack.characters.map(c => (
                 <span key={c.id} title={`${c.name} (${c.rarity})`}>{c.emoji}</span>
@@ -83,23 +81,65 @@ export default function Market({ user, userDoc, navigate }) {
             <button
               className="btn btn-primary btn-sm btn-full"
               style={{ marginTop:8, background: pack.color }}
-              disabled={coins < pack.cost || opening}
+              disabled={coins < pack.cost || !!spinning}
               onClick={() => handleBuy(pack)}
             >
-              {coins < pack.cost ? 'Need more coins' : opening ? 'Opening...' : 'Open Pack'}
+              {coins < pack.cost ? 'Need more coins' : spinning ? 'Opening...' : 'Open Pack'}
             </button>
           </div>
         ))}
       </div>
 
+      {/* Spinning animation overlay */}
+      {spinning && (
+        <div className="overlay">
+          <div style={{ textAlign:'center' }}>
+            <span style={{
+              fontSize: 96,
+              display: 'block',
+              animation: 'packSpin 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards',
+            }}>
+              {spinning.emoji}
+            </span>
+            <div style={{
+              color: spinning.color,
+              fontWeight: 900,
+              fontSize: 22,
+              marginTop: 16,
+              animation: 'fadeIn 0.4s ease',
+            }}>
+              Opening {spinning.name}...
+            </div>
+            <div style={{
+              display: 'flex',
+              gap: 8,
+              justifyContent: 'center',
+              marginTop: 16,
+              fontSize: 28,
+              animation: 'starFloat 1.8s ease-in-out infinite',
+            }}>
+              ✨ ⭐ 🌟 ⭐ ✨
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Reveal overlay */}
       {reveal && (
-        <div className="overlay" onClick={closeReveal}>
+        <div className="overlay" onClick={() => setReveal(null)}>
           <div className="reveal-box" onClick={e => e.stopPropagation()}>
-            <div style={{ color:'var(--muted)', fontSize:13, fontWeight:700, marginBottom:8 }}>
+            <div style={{ color:'var(--muted)', fontSize:13, fontWeight:700, marginBottom:12 }}>
               {reveal.pack.name} · You got...
             </div>
-            <span className="reveal-char-emoji">{reveal.char.emoji}</span>
+            <span
+              className="reveal-char-emoji"
+              style={{
+                animation: 'charReveal 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                filter: `drop-shadow(0 0 16px ${rarityColors[reveal.char.rarity]})`,
+              }}
+            >
+              {reveal.char.emoji}
+            </span>
             <div className="reveal-char-name">{reveal.char.name}</div>
             <div
               className="reveal-rarity"
@@ -111,9 +151,14 @@ export default function Market({ user, userDoc, navigate }) {
               {reveal.char.rarity}
             </div>
             {reveal.char.rarity === 'Legendary' && (
-              <div style={{ fontSize:32, marginBottom:12 }}>🎉🎉🎉</div>
+              <div style={{ fontSize:32, marginBottom:12, animation:'starFloat 1s ease-in-out infinite' }}>
+                🎉 🏆 🎉
+              </div>
             )}
-            <button className="btn btn-primary btn-full" onClick={closeReveal}>
+            {reveal.char.rarity === 'Rare' && (
+              <div style={{ fontSize:24, marginBottom:12 }}>✨ Nice pull! ✨</div>
+            )}
+            <button className="btn btn-primary btn-full" onClick={() => setReveal(null)}>
               Sweet!
             </button>
           </div>

@@ -127,12 +127,14 @@ export default function GamePlay({ user, roomCode, isHost, navigate }) {
         : wrongQuotes[Math.floor(Math.random() * wrongQuotes.length)]
     )
 
+    const points = correct ? Math.max(50, timeLeft * 50) : 0
+
     const updates = {
-      [`players/${user.uid}/answers/${qIdx}`]: { submitted: true, correct },
+      [`players/${user.uid}/answers/${qIdx}`]: { submitted: true, correct, points },
     }
     if (correct) {
-      updates[`players/${user.uid}/score`]       = (game.players?.[user.uid]?.score ?? 0) + 1
-      updates[`players/${user.uid}/coinsEarned`] = (game.players?.[user.uid]?.coinsEarned ?? 0) + 100
+      updates[`players/${user.uid}/score`]       = (game.players?.[user.uid]?.score ?? 0) + points
+      updates[`players/${user.uid}/coinsEarned`] = (game.players?.[user.uid]?.coinsEarned ?? 0) + 50
     }
     await update(ref(rtdb, `games/${roomCode}`), updates)
   }
@@ -226,7 +228,9 @@ export default function GamePlay({ user, roomCode, isHost, navigate }) {
                   </div>
                 )}
                 {myResult === 'correct' && (
-                  <div style={{ color:'var(--gold)', fontWeight:800 }}>+100 🪙</div>
+                  <div style={{ color:'var(--gold)', fontWeight:900, fontSize:20 }}>
+                    +{Math.max(50, timeLeft * 50)} pts &nbsp;· +50 🪙
+                  </div>
                 )}
                 {!hasAnswered && (
                   <div style={{ color:'var(--muted)', fontSize:14 }}>You didn't answer in time.</div>
@@ -244,10 +248,13 @@ export default function GamePlay({ user, roomCode, isHost, navigate }) {
               {sorted.map(([uid, p], i) => (
                 <div className="score-row" key={uid} style={uid === user.uid ? { color:'var(--purple2)' } : {}}>
                   <span className="score-rank">{i + 1}</span>
+                  {p.characterEmoji && (
+                    <span style={{ fontSize:16 }}>{p.characterEmoji}</span>
+                  )}
                   <span style={{ overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', flex:1 }}>
                     {p.name?.split(' ')[0]}
                   </span>
-                  <span className="score-pts">🪙{p.coinsEarned ?? 0}</span>
+                  <span className="score-pts">{(p.score ?? 0).toLocaleString()}</span>
                 </div>
               ))}
             </div>

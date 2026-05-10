@@ -47,7 +47,7 @@ export default function Results({ user, roomCode, navigate }) {
             {myRank === 1 ? 'You Won!' : `You Finished #${myRank}`}
           </h1>
           <p style={{ marginTop:8 }}>
-            Score: <strong style={{ color:'var(--cyan)' }}>{myScore}</strong> correct &nbsp;·&nbsp;
+            Score: <strong style={{ color:'var(--cyan)' }}>{myScore.toLocaleString()} pts</strong> &nbsp;·&nbsp;
             Earned: <strong style={{ color:'var(--gold)' }}>+{myCoins} 🪙</strong>
           </p>
         </div>
@@ -75,7 +75,7 @@ export default function Results({ user, roomCode, navigate }) {
                     #{actualRank}
                   </div>
                   <div className="podium-name">{p.name?.split(' ')[0]}</div>
-                  <div style={{ fontSize:13, color:'var(--gold)', fontWeight:700 }}>{p.score ?? 0} pts</div>
+                  <div style={{ fontSize:13, color:'var(--gold)', fontWeight:700 }}>{(p.score ?? 0).toLocaleString()} pts</div>
                 </div>
               )
             })}
@@ -93,7 +93,7 @@ export default function Results({ user, roomCode, navigate }) {
               <span style={{ flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                 {p.name} {uid === user.uid && '(you)'}
               </span>
-              <span className="lb-score">{p.score ?? 0} pts</span>
+              <span className="lb-score">{(p.score ?? 0).toLocaleString()} pts</span>
               <span className="lb-coins">+{p.coinsEarned ?? 0}🪙</span>
             </div>
           ))}
