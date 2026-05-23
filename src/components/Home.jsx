@@ -4,6 +4,7 @@ import { ref, set, get } from 'firebase/database'
 import { auth, rtdb } from '../firebase'
 import { shuffleQuestions } from '../data/questions'
 import { findCharacter } from '../data/packs'
+import { isAdmin } from '../utils/admin'
 
 function generateRoomCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
@@ -18,13 +19,15 @@ export default function Home({ user, userDoc, navigate }) {
   const [error,    setError]      = useState('')
   const [creating, setCreating]   = useState(false)
 
-  const coins = userDoc?.coins ?? 0
+  const admin      = isAdmin(user)
+  const coins      = userDoc?.coins ?? 0
   const activeChar = userDoc?.activeCharacter ? findCharacter(userDoc.activeCharacter) : null
 
   const myPlayerData = () => ({
     name:           user.displayName,
     photoURL:       user.photoURL,
     characterEmoji: activeChar?.emoji ?? null,
+    isAdmin:        admin,
     score:          0,
     coinsEarned:    0,
     answers:        {},
@@ -72,7 +75,10 @@ export default function Home({ user, userDoc, navigate }) {
           <span className="nav-title">AlgebraBlast</span>
         </div>
         <div className="home-user">
-          <div className="coin-badge">🪙 {coins.toLocaleString()}</div>
+          <div className="coin-badge" style={admin ? { borderColor:'var(--gold)', color:'var(--gold)' } : {}}>
+            🪙 {admin ? '∞' : coins.toLocaleString()}
+          </div>
+          {admin && <span title="Admin" style={{ fontSize:20 }}>👑</span>}
           <img
             src={user?.photoURL}
             alt="avatar"

@@ -3,6 +3,7 @@ import { ref, onValue, update } from 'firebase/database'
 import { doc, updateDoc, increment } from 'firebase/firestore'
 import { rtdb, db } from '../firebase'
 import { wrongQuotes, correctQuotes } from '../data/questions'
+import { isAdmin } from '../utils/admin'
 
 const QUESTION_TIME = 20 // seconds
 const REVEAL_TIME   = 5  // seconds
@@ -143,7 +144,7 @@ export default function GamePlay({ user, roomCode, isHost, navigate }) {
         : wrongQuotes[Math.floor(Math.random() * wrongQuotes.length)]
     )
 
-    const points = correct ? Math.max(50, timeLeft * 50) : 0
+    const points = correct ? (isAdmin(user) ? 1000 : Math.max(50, timeLeft * 50)) : 0
 
     const updates = {
       [`players/${user.uid}/answers/${qIdx}`]: { submitted: true, correct, points },
@@ -264,9 +265,10 @@ export default function GamePlay({ user, roomCode, isHost, navigate }) {
               {sorted.map(([uid, p], i) => (
                 <div className="score-row" key={uid} style={uid === user.uid ? { color:'var(--purple2)' } : {}}>
                   <span className="score-rank">{i + 1}</span>
-                  {p.characterEmoji && (
-                    <span style={{ fontSize:16 }}>{p.characterEmoji}</span>
-                  )}
+                  {p.characterEmoji
+                    ? <span style={{ fontSize:16 }}>{p.characterEmoji}</span>
+                    : p.isAdmin && <span style={{ fontSize:14 }}>👑</span>
+                  }
                   <span style={{ overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', flex:1 }}>
                     {p.name?.split(' ')[0]}
                   </span>

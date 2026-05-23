@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { doc, updateDoc, increment, arrayUnion } from 'firebase/firestore'
 import { db } from '../firebase'
 import { packs, pullFromPack, rarityColors } from '../data/packs'
+import { isAdmin } from '../utils/admin'
 
 function Confetti({ color }) {
   const pieces = Array.from({ length: 40 }, (_, i) => {
@@ -105,19 +106,19 @@ export default function Market({ user, userDoc, navigate }) {
   const [spinning, setSpinning] = useState(null) // pack being opened
   const [message, setMessage] = useState('')
 
+  const admin = isAdmin(user)
   const coins = userDoc?.coins ?? 0
 
   const handleBuy = async (pack) => {
-    if (coins < pack.cost) { setMessage("Not enough coins! Play more games to earn coins."); return }
+    if (!admin && coins < pack.cost) { setMessage("Not enough coins! Play more games to earn coins."); return }
     setMessage('')
     setSpinning(pack)
 
     const char = pullFromPack(pack)
     const userRef = doc(db, 'users', user.uid)
-    await updateDoc(userRef, {
-      coins:      increment(-pack.cost),
-      collection: arrayUnion(char.id),
-    })
+    const firestoreUpdate = { collection: arrayUnion(char.id) }
+    if (!admin) firestoreUpdate.coins = increment(-pack.cost)
+    await updateDoc(userRef, firestoreUpdate)
 
     // Let animation play for 1.8s before revealing
     setTimeout(() => {
@@ -132,7 +133,7 @@ export default function Market({ user, userDoc, navigate }) {
       <div className="nav-bar">
         <span className="nav-title">🛒 Market</span>
         <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-          <div className="coin-badge">🪙 {coins.toLocaleString()}</div>
+          <div className="coin-badge">🪙 {admin ? '∞' : coins.toLocaleString()}</div>
           <button className="btn btn-ghost btn-sm" onClick={() => navigate('home')}>← Back</button>
         </div>
       </div>
@@ -178,10 +179,10 @@ export default function Market({ user, userDoc, navigate }) {
             <button
               className="btn btn-primary btn-sm btn-full"
               style={{ marginTop:8, background: pack.color }}
-              disabled={coins < pack.cost || !!spinning}
+              disabled={(!admin && coins < pack.cost) || !!spinning}
               onClick={() => handleBuy(pack)}
             >
-              {coins < pack.cost ? 'Need more coins' : spinning ? 'Opening...' : 'Open Pack'}
+              {!admin && coins < pack.cost ? 'Need more coins' : spinning ? 'Opening...' : 'Open Pack'}
             </button>
           </div>
         ))}
