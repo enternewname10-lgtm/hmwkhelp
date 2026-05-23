@@ -84,6 +84,22 @@ export default function GamePlay({ user, roomCode, isHost, navigate }) {
     return () => clearInterval(timerRef.current)
   }, [game?.status, game?.questionStartTime, game?.currentQuestion])
 
+  // Auto-skip to reveal when all players have answered
+  useEffect(() => {
+    if (!game || !isHost || game.status !== 'question') return
+    const players = Object.values(game.players ?? {})
+    if (players.length === 0) return
+    const qIdx = game.currentQuestion ?? 0
+    const allAnswered = players.every(p => p.answers?.[qIdx]?.submitted)
+    if (allAnswered) {
+      clearInterval(timerRef.current)
+      update(ref(rtdb, `games/${roomCode}`), {
+        status:            'reveal',
+        questionStartTime: Date.now(),
+      })
+    }
+  }, [game?.players, game?.currentQuestion, game?.status])
+
   // Navigate to results when finished
   useEffect(() => {
     if (game?.status === 'finished') {
