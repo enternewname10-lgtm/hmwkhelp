@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { ref, onValue, update, remove } from 'firebase/database'
 import { rtdb } from '../firebase'
 
-export default function Lobby({ user, roomCode, isHost, navigate }) {
+export default function Lobby({ user, roomCode, isHost, gameMode, navigate }) {
   const [game, setGame] = useState(null)
 
   useEffect(() => {
@@ -11,7 +11,7 @@ export default function Lobby({ user, roomCode, isHost, navigate }) {
       if (!snap.exists()) { navigate('home'); return }
       const data = snap.val()
       setGame(data)
-      if (data.status === 'question') navigate('game')
+      if (data.status === 'question') navigate('game', { gameMode: data.mode ?? 'regular' })
     })
     return unsub
   }, [roomCode])

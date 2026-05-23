@@ -14,10 +14,11 @@ function generateRoomCode() {
 }
 
 export default function Home({ user, userDoc, navigate }) {
-  const [joinCode, setJoinCode]   = useState('')
-  const [view,     setView]       = useState('main') // 'main' | 'join'
-  const [error,    setError]      = useState('')
-  const [creating, setCreating]   = useState(false)
+  const [joinCode,  setJoinCode]  = useState('')
+  const [view,      setView]      = useState('main') // 'main' | 'create' | 'join'
+  const [error,     setError]     = useState('')
+  const [creating,  setCreating]  = useState(false)
+  const [modeChoice, setModeChoice] = useState('regular')
 
   const admin      = isAdmin(user)
   const coins      = userDoc?.coins ?? 0
@@ -41,13 +42,14 @@ export default function Home({ user, userDoc, navigate }) {
       host:              user.uid,
       hostName:          user.displayName,
       status:            'waiting',
+      mode:              modeChoice,
       currentQuestion:   0,
       questionStartTime: null,
       questions:         shuffleQuestions(10),
       players: { [user.uid]: myPlayerData() },
     })
     setCreating(false)
-    navigate('lobby', { roomCode: code, isHost: true })
+    navigate('lobby', { roomCode: code, isHost: true, gameMode: modeChoice })
   }
 
   const handleJoin = async () => {
@@ -61,7 +63,7 @@ export default function Home({ user, userDoc, navigate }) {
 
     const playerRef = ref(rtdb, `games/${code}/players/${user.uid}`)
     await set(playerRef, myPlayerData())
-    navigate('lobby', { roomCode: code, isHost: false })
+    navigate('lobby', { roomCode: code, isHost: false, gameMode: game.mode ?? 'regular' })
   }
 
   const handleSignOut = () => signOut(auth)
@@ -107,9 +109,9 @@ export default function Home({ user, userDoc, navigate }) {
 
       {view === 'main' && (
         <div className="home-grid">
-          <div className="home-card" onClick={handleCreate} style={{ opacity: creating ? 0.6 : 1 }}>
+          <div className="home-card" onClick={() => setView('create')}>
             <span className="home-card-emoji">🎮</span>
-            <span className="home-card-title">{creating ? 'Creating...' : 'Create Game'}</span>
+            <span className="home-card-title">Create Game</span>
             <span className="home-card-sub">Host a room for friends</span>
           </div>
 
@@ -130,6 +132,38 @@ export default function Home({ user, userDoc, navigate }) {
             <span className="home-card-title">Stats</span>
             <span className="home-card-sub">Wins, losses &amp; collection</span>
           </div>
+        </div>
+      )}
+
+      {view === 'create' && (
+        <div className="join-card card">
+          <h3 style={{ textAlign:'center' }}>Choose Game Mode</h3>
+          {[
+            { id:'regular', emoji:'🧮', label:'Regular Mode', sub:'Answer questions · earn kg · climb the leaderboard' },
+            { id:'fishing', emoji:'🎣', label:'Fishing Mode',  sub:'Answer right → cast your rod → catch fish for kg!' },
+          ].map(m => (
+            <div
+              key={m.id}
+              onClick={() => setModeChoice(m.id)}
+              style={{
+                padding:'16px 20px', borderRadius:14, cursor:'pointer',
+                border:`2px solid ${modeChoice === m.id ? 'var(--cyan)' : 'var(--border)'}`,
+                background: modeChoice === m.id ? 'rgba(6,182,212,0.1)' : 'var(--card)',
+                display:'flex', flexDirection:'column', gap:4, transition:'all 0.15s',
+              }}
+            >
+              <span style={{ fontSize:28 }}>{m.emoji} <strong>{m.label}</strong></span>
+              <span style={{ fontSize:13, color:'var(--muted)' }}>{m.sub}</span>
+            </div>
+          ))}
+          <button
+            className="btn btn-primary btn-full"
+            onClick={handleCreate}
+            disabled={creating}
+          >
+            {creating ? 'Creating...' : '🚀 Create Room'}
+          </button>
+          <button className="btn btn-ghost btn-full" onClick={() => setView('main')}>Back</button>
         </div>
       )}
 

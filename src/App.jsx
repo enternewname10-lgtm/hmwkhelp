@@ -3,23 +3,24 @@ import { onAuthStateChanged } from 'firebase/auth'
 import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore'
 import { auth, db } from './firebase'
 
-import Login   from './components/Login'
-import Home    from './components/Home'
-import Lobby   from './components/Lobby'
-import GamePlay from './components/GamePlay'
-import Results  from './components/Results'
-import Market   from './components/Market'
-import Stats    from './components/Stats'
+import Login       from './components/Login'
+import Home        from './components/Home'
+import Lobby       from './components/Lobby'
+import GamePlay    from './components/GamePlay'
+import FishingGame from './components/FishingGame'
+import Results     from './components/Results'
+import Market      from './components/Market'
+import Stats       from './components/Stats'
 
 export default function App() {
-  const [user,    setUser]    = useState(null)
-  const [userDoc, setUserDoc] = useState(null)
-  const [screen,  setScreen]  = useState('login')
+  const [user,     setUser]     = useState(null)
+  const [userDoc,  setUserDoc]  = useState(null)
+  const [screen,   setScreen]   = useState('login')
   const [roomCode, setRoomCode] = useState(null)
   const [isHost,   setIsHost]   = useState(false)
+  const [gameMode, setGameMode] = useState('regular')
   const [loading,  setLoading]  = useState(true)
 
-  // Auth state listener — create Firestore profile on first login
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
       try {
@@ -54,7 +55,6 @@ export default function App() {
     return unsub
   }, [])
 
-  // Live Firestore subscription for coins / collection changes
   useEffect(() => {
     if (!user) return
     const ref = doc(db, 'users', user.uid)
@@ -68,20 +68,23 @@ export default function App() {
     setScreen(target)
     if (opts.roomCode !== undefined) setRoomCode(opts.roomCode)
     if (opts.isHost   !== undefined) setIsHost(opts.isHost)
+    if (opts.gameMode !== undefined) setGameMode(opts.gameMode)
   }
 
   if (loading) return <div className="loading">Loading AlgebraBlast...</div>
 
-  const shared = { user, userDoc, navigate, roomCode, isHost }
+  const shared = { user, userDoc, navigate, roomCode, isHost, gameMode }
 
   switch (screen) {
-    case 'login':   return <Login   {...shared} />
-    case 'home':    return <Home    {...shared} />
-    case 'lobby':   return <Lobby   {...shared} />
-    case 'game':    return <GamePlay {...shared} />
-    case 'results': return <Results  {...shared} />
-    case 'market':  return <Market   {...shared} />
-    case 'stats':   return <Stats    {...shared} />
-    default:        return <Home    {...shared} />
+    case 'login':   return <Login       {...shared} />
+    case 'home':    return <Home        {...shared} />
+    case 'lobby':   return <Lobby       {...shared} />
+    case 'game':    return gameMode === 'fishing'
+                      ? <FishingGame  {...shared} />
+                      : <GamePlay     {...shared} />
+    case 'results': return <Results     {...shared} />
+    case 'market':  return <Market      {...shared} />
+    case 'stats':   return <Stats       {...shared} />
+    default:        return <Home        {...shared} />
   }
 }
