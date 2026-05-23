@@ -84,3 +84,20 @@ export function shuffleQuestions(count = 10) {
   const shuffled = [...questions].sort(() => Math.random() - 0.5)
   return shuffled.slice(0, count)
 }
+
+export function generateChoices(answer) {
+  const wrongs = new Set()
+  const pool = [-1, 1, -2, 2, -3, 3, -4, 4, -5, 5, -6, 6, -7, 7, -8, 8, -10, 10, -12, 12]
+  const shuffled = [...pool].sort(() => Math.random() - 0.5)
+  for (const d of shuffled) {
+    if (wrongs.size >= 3) break
+    const w = answer + d
+    if (w !== answer) wrongs.add(w)
+  }
+  const all = [answer, ...[...wrongs]]
+  for (let i = all.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[all[i], all[j]] = [all[j], all[i]]
+  }
+  return all
+}
