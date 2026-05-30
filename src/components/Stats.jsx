@@ -60,7 +60,7 @@ export default function Stats({ user, userDoc, navigate }) {
           <div style={{ display:'flex', justifyContent:'space-between', marginBottom:6, fontSize:13, fontWeight:700, color:'var(--muted)' }}>
             <span>Win Rate</span><span>{winRate}%</span>
           </div>
-          <div style={{ height:12, background:'rgba(255,255,255,0.08)', borderRadius:999, overflow:'hidden' }}>
+          <div style={{ height:10, background:'#e2e8f0', borderRadius:999, overflow:'hidden' }}>
             <div style={{
               height:'100%', width:`${winRate}%`,
               background:'linear-gradient(90deg, var(--purple), var(--cyan))',
@@ -98,9 +98,9 @@ export default function Stats({ user, userDoc, navigate }) {
                   className="char-card"
                   onClick={() => setActive(isActive ? null : char.id)}
                   style={{
-                    borderColor: isActive ? rarityColors[char.rarity] : rarityColors[char.rarity] + '55',
+                    background: rarityColors[char.rarity] + '22',
                     cursor: 'pointer',
-                    background: isActive ? rarityColors[char.rarity] + '18' : undefined,
+                    outline: isActive ? `2px solid ${rarityColors[char.rarity]}` : 'none',
                     transform: isActive ? 'scale(1.06)' : undefined,
                     transition: 'all 0.15s',
                     position: 'relative',
@@ -113,14 +113,13 @@ export default function Stats({ user, userDoc, navigate }) {
                       background:'var(--green)', borderRadius:'50%',
                       width:14, height:14, fontSize:9,
                       display:'flex', alignItems:'center', justifyContent:'center',
-                      fontWeight:900, color:'#fff',
+                      fontWeight:500, color:'#fff',
                     }}>✓</div>
                   )}
                   <span className="char-emoji">{char.emoji}</span>
-                  <span className="char-name" style={{ color: rarityColors[char.rarity] }}>{char.rarity}</span>
                   <span className="char-name">{char.name}</span>
-                  <span style={{ fontSize:10, color: isActive ? 'var(--green)' : 'var(--muted)', fontWeight:700 }}>
-                    {isActive ? 'ACTIVE' : 'USE'}
+                  <span style={{ fontSize:9, color: isActive ? rarityColors[char.rarity] : 'rgba(0,0,0,0.35)', fontWeight:500 }}>
+                    {isActive ? 'active' : char.rarity.toLowerCase()}
                   </span>
                 </div>
               )
