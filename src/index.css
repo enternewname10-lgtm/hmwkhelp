@@ -26,7 +26,7 @@
 }
 
 body {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Rubik', sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
@@ -74,7 +74,7 @@ body {
   padding: 14px 28px;
   border-radius: 12px;
   border: none;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Rubik', sans-serif;
   font-size: 16px;
   font-weight: 800;
   cursor: pointer;
@@ -98,9 +98,9 @@ body {
 .btn-full    { width: 100%; }
 
 /* ── Typography ── */
-h1 { font-size: clamp(28px, 5vw, 48px); font-weight: 900; }
-h2 { font-size: clamp(22px, 3vw, 32px); font-weight: 800; }
-h3 { font-size: 20px; font-weight: 700; }
+h1 { font-size: clamp(28px, 5vw, 48px); font-weight: 800; }
+h2 { font-size: clamp(22px, 3vw, 32px); font-weight: 700; }
+h3 { font-size: 20px; font-weight: 600; }
 p  { line-height: 1.6; color: var(--muted); }
 
 .gradient-text {
@@ -132,7 +132,7 @@ input[type="number"] {
   border-radius: 12px;
   padding: 14px 18px;
   color: var(--text);
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Rubik', sans-serif;
   font-size: 18px;
   font-weight: 700;
   width: 100%;
@@ -202,7 +202,7 @@ input[type="number"]:focus {
   padding: 16px 24px;
   border-radius: 12px;
   border: 1.5px solid #d1d5db;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Rubik', sans-serif;
   font-size: 17px;
   font-weight: 800;
   cursor: pointer;
@@ -570,12 +570,12 @@ input[type="number"]:focus {
 }
 
 .reveal-box {
-  background: #1e1b4b;
-  border: 2px solid rgba(255,255,255,0.12);
-  border-radius: 24px;
-  padding: 48px 40px;
+  background: #12122a;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 40px 36px;
   text-align: center;
-  max-width: 400px;
+  max-width: 360px;
   width: 100%;
   animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   color: #f1f5f9;
@@ -586,9 +586,9 @@ input[type="number"]:focus {
   to   { transform: scale(1);   opacity: 1; }
 }
 
-.reveal-char-emoji { font-size: 96px; display: block; margin-bottom: 16px; }
-.reveal-char-name  { font-size: 28px; font-weight: 900; margin-bottom: 8px; color: #f1f5f9; }
-.reveal-rarity     { font-size: 16px; font-weight: 700; padding: 6px 20px; border-radius: 999px; display: inline-block; margin-bottom: 24px; }
+.reveal-char-emoji { font-size: 80px; display: block; margin-bottom: 12px; }
+.reveal-char-name  { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: #f1f5f9; letter-spacing: 0.5px; }
+.reveal-rarity     { font-size: 12px; font-weight: 600; padding: 5px 16px; border-radius: 6px; display: inline-block; margin-bottom: 24px; letter-spacing: 1.5px; text-transform: uppercase; }
 
 /* ── Stats ── */
 .stats-grid {
@@ -622,19 +622,24 @@ input[type="number"]:focus {
 
 .char-card {
   background: #fff;
-  border: 2px solid rgba(14,165,233,0.2);
-  border-radius: 12px;
-  padding: 12px 8px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 14px 8px 10px;
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
   align-items: center;
-  box-shadow: 0 2px 8px rgba(14,165,233,0.07);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.char-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
 }
 
-.char-emoji { font-size: 32px; }
-.char-name  { font-size: 10px; font-weight: 700; color: var(--muted); }
+.char-emoji { font-size: 30px; line-height: 1; }
+.char-name  { font-size: 9px; font-weight: 600; color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase; }
 
 /* ── Nav bar ── */
 .nav-bar {
@@ -681,7 +686,7 @@ input[type="number"]:focus {
   color: #fff;
   cursor: pointer;
   transition: transform 0.12s, box-shadow 0.12s, opacity 0.2s, border-color 0.2s;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Rubik', sans-serif;
   text-shadow: 0 2px 6px rgba(0,0,0,0.25);
   width: 100%;
   min-height: 80px;
