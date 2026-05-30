@@ -12,7 +12,7 @@ export default function Login() {
   }
 
   return (
-    <div className="screen" style={{ background: 'radial-gradient(ellipse at top, #1a0533 0%, var(--bg) 70%)' }}>
+    <div className="screen">
       <div className="login-wrapper">
         <div className="login-logo">🧮</div>
         <h1 className="login-title gradient-text">AlgebraBlast</h1>
