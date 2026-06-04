@@ -5,6 +5,7 @@ export const packs = [
     emoji: '🏜️',
     cost: 500,
     color: '#f59e0b',
+    theme: { bg: 'linear-gradient(180deg, #fef9c3 0%, #fde68a 55%, #f59e0b33 100%)', scene: ['☀️','🏜️','🌵'] },
     characters: [
       { id: 'desert_cactus',   name: 'Cactus',      emoji: '🌵', rarity: 'Common',    chance: 0.50 },
       { id: 'desert_scorpion', name: 'Scorpion',     emoji: '🦂', rarity: 'Rare',      chance: 0.30 },
@@ -18,6 +19,7 @@ export const packs = [
     emoji: '☁️',
     cost: 500,
     color: '#06b6d4',
+    theme: { bg: 'linear-gradient(180deg, #bfdbfe 0%, #93c5fd 55%, #3b82f633 100%)', scene: ['☁️','🌤️','🌬️'] },
     characters: [
       { id: 'sky_cloud',     name: 'Storm Cloud',  emoji: '⛈️', rarity: 'Common',    chance: 0.50 },
       { id: 'sky_eagle',     name: 'Eagle',        emoji: '🦅', rarity: 'Rare',      chance: 0.30 },
@@ -31,6 +33,7 @@ export const packs = [
     emoji: '🎄',
     cost: 500,
     color: '#ef4444',
+    theme: { bg: 'linear-gradient(180deg, #f0fdf4 0%, #bbf7d0 55%, #86efac55 100%)', scene: ['❄️','🎄','⛄'] },
     characters: [
       { id: 'xmas_elf',      name: 'Elf',          emoji: '🧝', rarity: 'Common',    chance: 0.50 },
       { id: 'xmas_reindeer', name: 'Reindeer',     emoji: '🦌', rarity: 'Rare',      chance: 0.30 },
@@ -44,6 +47,7 @@ export const packs = [
     emoji: '🌊',
     cost: 500,
     color: '#2563eb',
+    theme: { bg: 'linear-gradient(180deg, #e0f2fe 0%, #7dd3fc 55%, #0284c755 100%)', scene: ['🌊','🐚','🪸'] },
     characters: [
       { id: 'ocean_fish',    name: 'Clownfish',   emoji: '🐠', rarity: 'Common',    chance: 0.50 },
       { id: 'ocean_shark',   name: 'Great White', emoji: '🦈', rarity: 'Rare',      chance: 0.30 },
@@ -57,6 +61,7 @@ export const packs = [
     emoji: '🌲',
     cost: 500,
     color: '#16a34a',
+    theme: { bg: 'linear-gradient(180deg, #dcfce7 0%, #86efac 55%, #16a34a44 100%)', scene: ['🌲','🍃','🌿'] },
     characters: [
       { id: 'forest_rabbit', name: 'Rabbit',        emoji: '🐇', rarity: 'Common',    chance: 0.50 },
       { id: 'forest_fox',    name: 'Shadow Fox',    emoji: '🦊', rarity: 'Rare',      chance: 0.30 },
@@ -70,6 +75,7 @@ export const packs = [
     emoji: '🚀',
     cost: 700,
     color: '#7c3aed',
+    theme: { bg: 'linear-gradient(180deg, #1e1b4b 0%, #312e81 55%, #4c1d9555 100%)', scene: ['⭐','🌙','🪐'] },
     characters: [
       { id: 'space_alien',     name: 'Alien',      emoji: '👽', rarity: 'Common',    chance: 0.50 },
       { id: 'space_rocket',    name: 'Rocket',     emoji: '🚀', rarity: 'Rare',      chance: 0.30 },

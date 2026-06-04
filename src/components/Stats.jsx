@@ -1,6 +1,6 @@
 import { doc, updateDoc } from 'firebase/firestore'
 import { db } from '../firebase'
-import { findCharacter, rarityColors } from '../data/packs'
+import { packs, findCharacter, rarityColors } from '../data/packs'
 
 export default function Stats({ user, userDoc, navigate }) {
   const wins   = userDoc?.totalWins   ?? 0
@@ -92,33 +92,57 @@ export default function Stats({ user, userDoc, navigate }) {
           <div className="collection-grid">
             {ownedChars.map(char => {
               const isActive = char.id === activeCharId
+              const packId   = char.id.split('_')[0]
+              const pack     = packs.find(p => p.id === packId)
+              const theme    = pack?.theme
+              const isSpace  = packId === 'space'
               return (
                 <div
                   key={char.id}
                   className="char-card"
                   onClick={() => setActive(isActive ? null : char.id)}
                   style={{
-                    background: rarityColors[char.rarity] + '22',
+                    background: theme?.bg ?? rarityColors[char.rarity] + '22',
                     cursor: 'pointer',
                     outline: isActive ? `2px solid ${rarityColors[char.rarity]}` : 'none',
                     transform: isActive ? 'scale(1.06)' : undefined,
                     transition: 'all 0.15s',
                     position: 'relative',
+                    overflow: 'hidden',
                   }}
                   title={isActive ? 'Active — click to deselect' : 'Click to use in game'}
                 >
+                  {/* Scene background emoji */}
+                  {theme && (
+                    <div style={{
+                      position:'absolute', bottom:2, left:0, right:0,
+                      fontSize:11, opacity:0.45, textAlign:'center',
+                      letterSpacing:1, pointerEvents:'none',
+                    }}>
+                      {theme.scene.join('')}
+                    </div>
+                  )}
+
                   {isActive && (
                     <div style={{
                       position:'absolute', top:4, right:4,
-                      background:'var(--green)', borderRadius:'50%',
-                      width:14, height:14, fontSize:9,
+                      background: rarityColors[char.rarity],
+                      borderRadius:'50%', width:14, height:14, fontSize:9,
                       display:'flex', alignItems:'center', justifyContent:'center',
-                      fontWeight:500, color:'#fff',
+                      color:'#fff',
                     }}>✓</div>
                   )}
-                  <span className="char-emoji">{char.emoji}</span>
-                  <span className="char-name">{char.name}</span>
-                  <span style={{ fontSize:9, color: isActive ? rarityColors[char.rarity] : 'rgba(0,0,0,0.35)', fontWeight:500 }}>
+
+                  <span className="char-emoji" style={{ filter: isSpace ? 'drop-shadow(0 0 4px rgba(255,255,255,0.6))' : undefined }}>
+                    {char.emoji}
+                  </span>
+                  <span className="char-name" style={{ color: isSpace ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.45)' }}>
+                    {char.name}
+                  </span>
+                  <span style={{
+                    fontSize:9, fontWeight:500,
+                    color: isActive ? rarityColors[char.rarity] : isSpace ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.3)',
+                  }}>
                     {isActive ? 'active' : char.rarity.toLowerCase()}
                   </span>
                 </div>
