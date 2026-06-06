@@ -95,57 +95,45 @@ export default function Stats({ user, userDoc, navigate }) {
               const rawId    = char.id.split('_')[0]
               const packId   = rawId === 'xmas' ? 'christmas' : rawId
               const pack     = packs.find(p => p.id === packId)
-              const theme    = pack?.theme
-              const isSpace  = packId === 'space'
+              const rc       = rarityColors[char.rarity]
               return (
                 <div
                   key={char.id}
                   className="char-card"
                   onClick={() => setActive(isActive ? null : char.id)}
                   style={{
-                    background: theme?.bg ?? rarityColors[char.rarity] + '22',
                     cursor: 'pointer',
-                    outline: isActive ? `2px solid ${rarityColors[char.rarity]}` : 'none',
-                    transform: isActive ? 'scale(1.06)' : undefined,
+                    outline: isActive ? `2px solid ${rc}` : '2px solid transparent',
+                    transform: isActive ? 'scale(1.05)' : undefined,
                     transition: 'all 0.15s',
-                    position: 'relative',
-                    overflow: 'hidden',
                   }}
                   title={isActive ? 'Active — click to deselect' : 'Click to use in game'}
                 >
-                  {/* Scene background emoji */}
-                  {theme && (
-                    <div style={{
-                      position:'absolute', bottom:2, left:0, right:0,
-                      fontSize:11, opacity:0.45, textAlign:'center',
-                      letterSpacing:1, pointerEvents:'none',
-                    }}>
-                      {theme.scene.join('')}
+                  {/* Rarity bar at top */}
+                  <div style={{ height: 4, background: rc, width:'100%', borderRadius:'4px 4px 0 0', marginBottom: 10 }} />
+
+                  {/* Pack scene strip */}
+                  {pack?.theme && (
+                    <div style={{ fontSize: 13, letterSpacing: 2, opacity: 0.5, marginBottom: 6, lineHeight:1 }}>
+                      {pack.theme.scene.join(' ')}
                     </div>
                   )}
 
-                  {isActive && (
-                    <div style={{
-                      position:'absolute', top:4, right:4,
-                      background: rarityColors[char.rarity],
-                      borderRadius:'50%', width:14, height:14, fontSize:9,
-                      display:'flex', alignItems:'center', justifyContent:'center',
-                      color:'#fff',
-                    }}>✓</div>
-                  )}
+                  {/* Character emoji */}
+                  <div style={{ fontSize: 38, lineHeight: 1, marginBottom: 8 }}>{char.emoji}</div>
 
-                  <span className="char-emoji" style={{ filter: isSpace ? 'drop-shadow(0 0 4px rgba(255,255,255,0.6))' : undefined }}>
-                    {char.emoji}
-                  </span>
-                  <span className="char-name" style={{ color: isSpace ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.45)' }}>
+                  {/* Name */}
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#1e293b', letterSpacing: 0.3, marginBottom: 2 }}>
                     {char.name}
-                  </span>
-                  <span style={{
-                    fontSize:9, fontWeight:500,
-                    color: isActive ? rarityColors[char.rarity] : isSpace ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.3)',
+                  </div>
+
+                  {/* Rarity */}
+                  <div style={{
+                    fontSize: 9, fontWeight: 500, letterSpacing: 1,
+                    color: rc, textTransform: 'uppercase',
                   }}>
-                    {isActive ? 'active' : char.rarity.toLowerCase()}
-                  </span>
+                    {isActive ? '● active' : char.rarity}
+                  </div>
                 </div>
               )
             })}
