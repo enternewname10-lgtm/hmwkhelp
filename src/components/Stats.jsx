@@ -92,7 +92,8 @@ export default function Stats({ user, userDoc, navigate }) {
           <div className="collection-grid">
             {ownedChars.map(char => {
               const isActive = char.id === activeCharId
-              const packId   = char.id.split('_')[0]
+              const rawId    = char.id.split('_')[0]
+              const packId   = rawId === 'xmas' ? 'christmas' : rawId
               const pack     = packs.find(p => p.id === packId)
               const theme    = pack?.theme
               const isSpace  = packId === 'space'
