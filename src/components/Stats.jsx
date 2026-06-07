@@ -2,6 +2,105 @@ import { doc, updateDoc } from 'firebase/firestore'
 import { db } from '../firebase'
 import { packs, findCharacter, rarityColors } from '../data/packs'
 
+function Scene({ packId }) {
+  if (packId === 'desert') return (
+    <>
+      <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, #f97316 0%, #fb923c 30%, #fbbf24 60%, #ca8a04 100%)' }} />
+      {/* Sun */}
+      <div style={{ position:'absolute', top:10, right:14, width:22, height:22, borderRadius:'50%', background:'#fef08a', boxShadow:'0 0 14px 6px rgba(253,224,71,0.65)' }} />
+      {/* Sand dunes */}
+      <div style={{ position:'absolute', bottom:0, left:0, right:0, height:38, background:'#92400e', borderRadius:'55% 45% 0 0 / 24px 20px 0 0' }} />
+      <div style={{ position:'absolute', bottom:0, right:-4, width:55, height:26, background:'#a16207', borderRadius:'60% 40% 0 0 / 16px 10px 0 0' }} />
+      {/* Tiny oasis pool */}
+      <div style={{ position:'absolute', bottom:24, left:'42%', width:18, height:7, background:'#38bdf8', borderRadius:'50%', opacity:0.75 }} />
+    </>
+  )
+
+  if (packId === 'ocean') return (
+    <>
+      <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, #38bdf8 0%, #0284c7 35%, #075985 72%, #0c4a6e 100%)' }} />
+      {/* Light shafts */}
+      <div style={{ position:'absolute', top:0, left:'28%', width:9, height:'65%', background:'linear-gradient(180deg,rgba(255,255,255,0.18),transparent)', transform:'skewX(-12deg)' }} />
+      <div style={{ position:'absolute', top:0, left:'52%', width:6, height:'50%', background:'linear-gradient(180deg,rgba(255,255,255,0.1),transparent)', transform:'skewX(8deg)' }} />
+      {/* Bubbles */}
+      {[{l:'12%',t:'32%',s:5},{l:'22%',t:'55%',s:3},{l:'68%',t:'28%',s:4},{l:'78%',t:'50%',s:3},{l:'45%',t:'18%',s:4}].map((b,i) => (
+        <div key={i} style={{ position:'absolute', left:b.l, top:b.t, width:b.s, height:b.s, borderRadius:'50%', background:'rgba(255,255,255,0.5)', border:'1px solid rgba(255,255,255,0.3)' }} />
+      ))}
+      {/* Sea floor */}
+      <div style={{ position:'absolute', bottom:0, left:0, right:0, height:22, background:'#78350f' }} />
+      {/* Coral */}
+      <div style={{ position:'absolute', bottom:18, left:10, width:7, height:16, background:'#f97316', borderRadius:'4px 4px 0 0' }} />
+      <div style={{ position:'absolute', bottom:18, left:16, width:5, height:10, background:'#fb7185', borderRadius:'4px 4px 0 0' }} />
+      <div style={{ position:'absolute', bottom:18, right:8, width:6, height:13, background:'#ec4899', borderRadius:'4px 4px 0 0' }} />
+    </>
+  )
+
+  if (packId === 'sky') return (
+    <>
+      <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, #0ea5e9 0%, #38bdf8 45%, #7dd3fc 80%, #e0f2fe 100%)' }} />
+      {/* Clouds */}
+      <div style={{ position:'absolute', top:14, left:4, width:32, height:13, background:'rgba(255,255,255,0.92)', borderRadius:12 }} />
+      <div style={{ position:'absolute', top:9, left:12, width:22, height:15, background:'rgba(255,255,255,0.95)', borderRadius:12 }} />
+      <div style={{ position:'absolute', top:22, right:4, width:28, height:11, background:'rgba(255,255,255,0.85)', borderRadius:12 }} />
+      <div style={{ position:'absolute', top:17, right:14, width:18, height:13, background:'rgba(255,255,255,0.9)', borderRadius:12 }} />
+      {/* Ground */}
+      <div style={{ position:'absolute', bottom:0, left:0, right:0, height:20, background:'#86efac' }} />
+    </>
+  )
+
+  if (packId === 'christmas') return (
+    <>
+      <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, #0f172a 0%, #1e3a5f 40%, #1d4ed8 75%, #bfdbfe 100%)' }} />
+      {/* Stars */}
+      {[{l:'12%',t:'8%'},{l:'38%',t:'5%'},{l:'62%',t:'11%'},{l:'80%',t:'7%'},{l:'22%',t:'20%'},{l:'70%',t:'22%'}].map((s,i) => (
+        <div key={i} style={{ position:'absolute', left:s.l, top:s.t, width:2, height:2, borderRadius:'50%', background:'#fff' }} />
+      ))}
+      {/* Snow ground */}
+      <div style={{ position:'absolute', bottom:0, left:0, right:0, height:28, background:'#f0f9ff', borderRadius:'50% 50% 0 0 / 14px 14px 0 0' }} />
+      {/* Christmas tree */}
+      <div style={{ position:'absolute', bottom:24, right:8, width:0, height:0, borderLeft:'9px solid transparent', borderRight:'9px solid transparent', borderBottom:'22px solid #15803d' }} />
+      <div style={{ position:'absolute', bottom:24, right:10, width:0, height:0, borderLeft:'7px solid transparent', borderRight:'7px solid transparent', borderBottom:'14px solid #166534' }} />
+      {/* Snow dots falling */}
+      {[{l:'20%',t:'35%'},{l:'50%',t:'28%'},{l:'75%',t:'40%'}].map((s,i) => (
+        <div key={i} style={{ position:'absolute', left:s.l, top:s.t, width:3, height:3, borderRadius:'50%', background:'rgba(255,255,255,0.8)' }} />
+      ))}
+    </>
+  )
+
+  if (packId === 'forest') return (
+    <>
+      <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, #86efac 0%, #4ade80 28%, #16a34a 60%, #14532d 100%)' }} />
+      {/* Tree left */}
+      <div style={{ position:'absolute', bottom:16, left:-4, width:0, height:0, borderLeft:'14px solid transparent', borderRight:'14px solid transparent', borderBottom:'40px solid #14532d' }} />
+      <div style={{ position:'absolute', bottom:30, left:0, width:0, height:0, borderLeft:'10px solid transparent', borderRight:'10px solid transparent', borderBottom:'28px solid #166534' }} />
+      {/* Tree right */}
+      <div style={{ position:'absolute', bottom:16, right:-4, width:0, height:0, borderLeft:'12px solid transparent', borderRight:'12px solid transparent', borderBottom:'34px solid #14532d' }} />
+      <div style={{ position:'absolute', bottom:28, right:0, width:0, height:0, borderLeft:'9px solid transparent', borderRight:'9px solid transparent', borderBottom:'24px solid #166534' }} />
+      {/* Ground */}
+      <div style={{ position:'absolute', bottom:0, left:0, right:0, height:18, background:'#14532d' }} />
+      {/* Leaves */}
+      <div style={{ position:'absolute', top:16, left:22, width:7, height:7, borderRadius:'50% 0', background:'rgba(74,222,128,0.7)', transform:'rotate(45deg)' }} />
+      <div style={{ position:'absolute', top:28, right:20, width:5, height:5, borderRadius:'50% 0', background:'rgba(134,239,172,0.6)', transform:'rotate(-30deg)' }} />
+    </>
+  )
+
+  if (packId === 'space') return (
+    <>
+      <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, #020617 0%, #0f0c29 45%, #1e1b4b 100%)' }} />
+      {/* Stars */}
+      {[{l:'8%',t:'6%',s:2},{l:'28%',t:'4%',s:1.5},{l:'52%',t:'10%',s:2},{l:'72%',t:'5%',s:1.5},{l:'88%',t:'18%',s:2},{l:'18%',t:'22%',s:1},{l:'62%',t:'26%',s:1.5},{l:'42%',t:'16%',s:1},{l:'80%',t:'30%',s:1}].map((s,i) => (
+        <div key={i} style={{ position:'absolute', left:s.l, top:s.t, width:s.s, height:s.s, borderRadius:'50%', background:'#fff', opacity:0.85 }} />
+      ))}
+      {/* Planet */}
+      <div style={{ position:'absolute', top:10, left:10, width:22, height:22, borderRadius:'50%', background:'linear-gradient(135deg, #a78bfa, #6d28d9)', boxShadow:'0 0 10px rgba(139,92,246,0.55)' }} />
+      {/* Planet ring */}
+      <div style={{ position:'absolute', top:19, left:4, width:34, height:9, border:'1.5px solid rgba(167,139,250,0.45)', borderRadius:'50%', transform:'rotateX(65deg)' }} />
+    </>
+  )
+
+  return <div style={{ position:'absolute', inset:0, background:'#e2e8f0' }} />
+}
+
 export default function Stats({ user, userDoc, navigate }) {
   const wins   = userDoc?.totalWins   ?? 0
   const losses = userDoc?.totalLosses ?? 0
@@ -50,22 +149,18 @@ export default function Stats({ user, userDoc, navigate }) {
           <div className="stat-label">COINS</div>
         </div>
         <div className="stat-card">
-          <div className="stat-value" style={{ color:'var(--purple2)' }}>{uniqueOwned.length}</div>
+          <div className="stat-value" style={{ color:'var(--purple)' }}>{uniqueOwned.length}</div>
           <div className="stat-label">CHARACTERS</div>
         </div>
       </div>
 
       {played > 0 && (
         <div style={{ width:'100%', maxWidth:700, marginBottom:32 }}>
-          <div style={{ display:'flex', justifyContent:'space-between', marginBottom:6, fontSize:13, fontWeight:700, color:'var(--muted)' }}>
+          <div style={{ display:'flex', justifyContent:'space-between', marginBottom:6, fontSize:13, fontWeight:500, color:'var(--muted)' }}>
             <span>Win Rate</span><span>{winRate}%</span>
           </div>
           <div style={{ height:10, background:'#e2e8f0', borderRadius:999, overflow:'hidden' }}>
-            <div style={{
-              height:'100%', width:`${winRate}%`,
-              background:'linear-gradient(90deg, var(--purple), var(--cyan))',
-              borderRadius:999, transition:'width 0.5s ease',
-            }} />
+            <div style={{ height:'100%', width:`${winRate}%`, background:'linear-gradient(90deg, var(--purple), var(--cyan))', borderRadius:999, transition:'width 0.5s ease' }} />
           </div>
         </div>
       )}
@@ -74,7 +169,7 @@ export default function Stats({ user, userDoc, navigate }) {
       <div style={{ width:'100%', maxWidth:700 }}>
         <h3 style={{ marginBottom:4 }}>
           Collection
-          <span style={{ color:'var(--muted)', fontWeight:600, fontSize:14, marginLeft:8 }}>
+          <span style={{ color:'var(--muted)', fontWeight:400, fontSize:14, marginLeft:8 }}>
             {uniqueOwned.length} character{uniqueOwned.length !== 1 ? 's' : ''}
           </span>
         </h3>
@@ -83,10 +178,8 @@ export default function Stats({ user, userDoc, navigate }) {
         {ownedChars.length === 0 ? (
           <div className="card" style={{ textAlign:'center', color:'var(--muted)', padding:40 }}>
             <div style={{ fontSize:48, marginBottom:12 }}>📦</div>
-            <p>No characters yet! Open packs in the Market to start collecting.</p>
-            <button className="btn btn-primary mt-16" onClick={() => navigate('market')}>
-              Go to Market
-            </button>
+            <p>No characters yet. Open packs in the Market.</p>
+            <button className="btn btn-primary mt-16" onClick={() => navigate('market')}>Go to Market</button>
           </div>
         ) : (
           <div className="collection-grid">
@@ -94,7 +187,6 @@ export default function Stats({ user, userDoc, navigate }) {
               const isActive = char.id === activeCharId
               const rawId    = char.id.split('_')[0]
               const packId   = rawId === 'xmas' ? 'christmas' : rawId
-              const pack     = packs.find(p => p.id === packId)
               const rc       = rarityColors[char.rarity]
               return (
                 <div
@@ -102,37 +194,33 @@ export default function Stats({ user, userDoc, navigate }) {
                   className="char-card"
                   onClick={() => setActive(isActive ? null : char.id)}
                   style={{
-                    cursor: 'pointer',
                     outline: isActive ? `2px solid ${rc}` : '2px solid transparent',
                     transform: isActive ? 'scale(1.05)' : undefined,
                     transition: 'all 0.15s',
+                    cursor: 'pointer',
                   }}
                   title={isActive ? 'Active — click to deselect' : 'Click to use in game'}
                 >
-                  {/* Rarity bar at top */}
-                  <div style={{ height: 4, background: rc, width:'100%', borderRadius:'4px 4px 0 0', marginBottom: 10 }} />
-
-                  {/* Pack scene strip */}
-                  {pack?.theme && (
-                    <div style={{ fontSize: 13, letterSpacing: 2, opacity: 0.5, marginBottom: 6, lineHeight:1 }}>
-                      {pack.theme.scene.join(' ')}
+                  {/* Scene */}
+                  <div style={{ position:'relative', width:'100%', height:90, overflow:'hidden' }}>
+                    <Scene packId={packId} />
+                    {/* Character floats in scene */}
+                    <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center', fontSize:36 }}>
+                      {char.emoji}
                     </div>
-                  )}
-
-                  {/* Character emoji */}
-                  <div style={{ fontSize: 38, lineHeight: 1, marginBottom: 8 }}>{char.emoji}</div>
-
-                  {/* Name */}
-                  <div style={{ fontSize: 11, fontWeight: 600, color: '#1e293b', letterSpacing: 0.3, marginBottom: 2 }}>
-                    {char.name}
+                    {/* Active badge */}
+                    {isActive && (
+                      <div style={{ position:'absolute', top:5, right:5, background:rc, borderRadius:'50%', width:14, height:14, fontSize:8, display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontWeight:600 }}>✓</div>
+                    )}
                   </div>
 
-                  {/* Rarity */}
-                  <div style={{
-                    fontSize: 9, fontWeight: 500, letterSpacing: 1,
-                    color: rc, textTransform: 'uppercase',
-                  }}>
-                    {isActive ? '● active' : char.rarity}
+                  {/* Card footer */}
+                  <div style={{ height:3, background:rc, width:'100%' }} />
+                  <div style={{ padding:'8px 8px 6px', width:'100%' }}>
+                    <div style={{ fontSize:11, fontWeight:600, color:'#1e293b', marginBottom:2 }}>{char.name}</div>
+                    <div style={{ fontSize:9, fontWeight:500, color: isActive ? rc : '#94a3b8', textTransform:'uppercase', letterSpacing:0.5 }}>
+                      {isActive ? '● active' : char.rarity}
+                    </div>
                   </div>
                 </div>
               )
