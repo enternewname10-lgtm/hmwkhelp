@@ -7,7 +7,13 @@ export default function Login() {
       await signInWithPopup(auth, provider)
     } catch (err) {
       console.error(err)
-      alert('Sign-in failed. Please try again.')
+      if (err.code === 'auth/unauthorized-domain') {
+        alert('This domain is not authorized in Firebase.\n\nFix: Firebase Console → Authentication → Settings → Authorized domains → add this site\'s URL.')
+      } else if (err.code === 'auth/popup-closed-by-user') {
+        // user closed it themselves — no alert needed
+      } else {
+        alert(`Sign-in failed: ${err.code ?? err.message}`)
+      }
     }
   }
 
