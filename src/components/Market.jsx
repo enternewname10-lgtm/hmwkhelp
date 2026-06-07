@@ -190,15 +190,7 @@ export default function Market({ user, userDoc, navigate }) {
 
   return (
     <div className="screen-top">
-      <div className="nav-bar">
-        <span className="nav-title">Market</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div className="coin-badge">🪙 {admin ? '∞' : coins.toLocaleString()}</div>
-          <button className="btn btn-ghost btn-sm" onClick={() => navigate('home')}>← Back</button>
-        </div>
-      </div>
-
-      <div style={{ width: '100%', maxWidth: 840, marginTop: 8, marginBottom: 24 }}>
+      <div style={{ width: '100%', maxWidth: 840, paddingTop: 32, marginBottom: 24 }}>
         <h2 style={{ marginBottom: 4 }}>Character Packs</h2>
         <p>Open packs to collect characters. Rarer pulls are harder to get.</p>
       </div>

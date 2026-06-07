@@ -1,9 +1,7 @@
 import { useState } from 'react'
-import { signOut } from 'firebase/auth'
 import { ref, set, get } from 'firebase/database'
-import { auth, rtdb } from '../firebase'
+import { rtdb } from '../firebase'
 import { shuffleQuestions } from '../data/questions'
-import { findCharacter } from '../data/packs'
 import { isAdmin } from '../utils/admin'
 
 function generateRoomCode() {
@@ -24,14 +22,12 @@ export default function Home({ user, userDoc, navigate }) {
   const [qForm,           setQForm]           = useState({ equation: '', answer: '', hint: '' })
   const [qError,          setQError]          = useState('')
 
-  const admin      = isAdmin(user)
-  const coins      = userDoc?.coins ?? 0
-  const activeChar = userDoc?.activeCharacter ? findCharacter(userDoc.activeCharacter) : null
+  const admin = isAdmin(user)
 
   const myPlayerData = () => ({
     name:           user.displayName,
     photoURL:       user.photoURL,
-    characterEmoji: activeChar?.emoji ?? null,
+    characterEmoji: userDoc?.activeCharacter ?? null,
     isAdmin:        admin,
     score:          0,
     coinsEarned:    0,
@@ -90,8 +86,6 @@ export default function Home({ user, userDoc, navigate }) {
 
   const removeQuestion = (i) => setCustomQuestions(prev => prev.filter((_, idx) => idx !== i))
 
-  const handleSignOut = () => signOut(auth)
-
   const selectionStyle = (active) => ({
     padding: '11px 14px',
     borderRadius: 8,
@@ -106,55 +100,17 @@ export default function Home({ user, userDoc, navigate }) {
   })
 
   return (
-    <div className="screen-top">
-      {/* Header */}
-      <div className="home-header">
-        <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--text)' }}>
-          AlgebraBlast
-        </span>
-        <div className="home-user">
-          <div className="coin-badge">🪙 {admin ? '∞' : coins.toLocaleString()}</div>
-          {admin && (
-            <span style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 500 }}>Admin</span>
-          )}
-          <img src={user?.photoURL} alt="avatar" className="avatar" width={30} height={30} />
-          <button className="btn btn-ghost btn-sm" onClick={handleSignOut}>Sign out</button>
-        </div>
-      </div>
+    <div className="screen-top" style={{ paddingTop: 32 }}>
 
-      {/* Welcome */}
-      <div style={{ width: '100%', maxWidth: 660, marginBottom: 28 }}>
-        <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 4 }}>
-          {activeChar ? (
-            <>
-              {activeChar.emoji} Playing as{' '}
-              <strong style={{ color: 'var(--text-2)', fontWeight: 500 }}>{activeChar.name}</strong>
-              {' · '}
-              <span
-                style={{ cursor: 'pointer', color: 'var(--primary)', textDecoration: 'underline' }}
-                onClick={() => navigate('stats')}
-              >
-                Change
-              </span>
-            </>
-          ) : (
-            <>
-              No character selected{' · '}
-              <span
-                style={{ cursor: 'pointer', color: 'var(--primary)', textDecoration: 'underline' }}
-                onClick={() => navigate('stats')}
-              >
-                Pick one
-              </span>
-            </>
-          )}
-        </p>
+      {/* Greeting */}
+      <div style={{ width: '100%', maxWidth: 560, marginBottom: 32 }}>
         <h2>Hi, {user?.displayName?.split(' ')[0]}</h2>
+        <p style={{ marginTop: 4, fontSize: 13 }}>Ready to play? Create a room or join one below.</p>
       </div>
 
-      {/* ── Main menu ── */}
+      {/* ── Main ── */}
       {view === 'main' && (
-        <div className="home-grid">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, width: '100%', maxWidth: 560 }}>
           <div className="home-card" onClick={() => setView('create')}>
             <div className="home-card-icon">🎮</div>
             <div className="home-card-title">Create Game</div>
@@ -164,16 +120,6 @@ export default function Home({ user, userDoc, navigate }) {
             <div className="home-card-icon">🚪</div>
             <div className="home-card-title">Join Game</div>
             <div className="home-card-sub">Enter a room code</div>
-          </div>
-          <div className="home-card" onClick={() => navigate('market')}>
-            <div className="home-card-icon">🛒</div>
-            <div className="home-card-title">Market</div>
-            <div className="home-card-sub">Spend coins on character packs</div>
-          </div>
-          <div className="home-card" onClick={() => navigate('stats')}>
-            <div className="home-card-icon">📊</div>
-            <div className="home-card-title">Stats</div>
-            <div className="home-card-sub">Your record and collection</div>
           </div>
         </div>
       )}
@@ -209,18 +155,9 @@ export default function Home({ user, userDoc, navigate }) {
             ))}
           </div>
 
-          {/* Custom question builder */}
           {questionMode === 'custom' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <div style={{
-                background: 'var(--surface)',
-                border: '1px solid var(--border)',
-                borderRadius: 8,
-                padding: 12,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 8,
-              }}>
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, padding: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <input
                   type="text"
                   placeholder="Equation — e.g. 2x + 3 = 9"
@@ -255,22 +192,11 @@ export default function Home({ user, userDoc, navigate }) {
               {customQuestions.length > 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                   {customQuestions.map((q, i) => (
-                    <div key={i} style={{
-                      display: 'flex', alignItems: 'center', gap: 8,
-                      background: 'var(--card)', border: '1px solid var(--border)',
-                      borderRadius: 7, padding: '7px 12px',
-                    }}>
-                      <span style={{
-                        width: 20, height: 20, background: 'var(--primary)', color: '#fff',
-                        borderRadius: '50%', display: 'flex', alignItems: 'center',
-                        justifyContent: 'center', fontSize: 10, fontWeight: 600, flexShrink: 0,
-                      }}>{i + 1}</span>
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 7, padding: '7px 12px' }}>
+                      <span style={{ width: 20, height: 20, background: 'var(--primary)', color: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 600, flexShrink: 0 }}>{i + 1}</span>
                       <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{q.equation}</span>
                       <span style={{ fontSize: 12, color: 'var(--muted)' }}>= {q.answer}</span>
-                      <button
-                        onClick={() => removeQuestion(i)}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', fontSize: 15, padding: 0, lineHeight: 1 }}
-                      >✕</button>
+                      <button onClick={() => removeQuestion(i)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', fontSize: 15, padding: 0, lineHeight: 1 }}>✕</button>
                     </div>
                   ))}
                 </div>

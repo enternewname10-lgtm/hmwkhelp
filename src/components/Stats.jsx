@@ -100,13 +100,8 @@ export default function Stats({ user, userDoc, navigate }) {
   }
 
   return (
-    <div className="screen-top">
-      <div className="nav-bar">
-        <span className="nav-title">Stats</span>
-        <button className="btn btn-ghost btn-sm" onClick={() => navigate('home')}>← Back</button>
-      </div>
-
-      <div style={{ width: '100%', maxWidth: 620, marginTop: 8 }}>
+    <div className="screen-top" style={{ paddingTop: 32 }}>
+      <div style={{ width: '100%', maxWidth: 620 }}>
         <h2 style={{ marginBottom: 20 }}>Your Stats</h2>
 
         <div className="stats-grid">
