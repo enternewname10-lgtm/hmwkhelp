@@ -1,6 +1,7 @@
 import { doc, updateDoc } from 'firebase/firestore'
 import { db } from '../firebase'
 import { packs, findCharacter, rarityColors } from '../data/packs'
+import CharacterArt from './CharacterArt'
 
 function Scene({ packId }) {
   if (packId === 'desert') return (
@@ -204,9 +205,9 @@ export default function Stats({ user, userDoc, navigate }) {
                   {/* Scene */}
                   <div style={{ position:'relative', width:'100%', height:90, overflow:'hidden' }}>
                     <Scene packId={packId} />
-                    {/* Character floats in scene */}
-                    <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center', fontSize:36 }}>
-                      {char.emoji}
+                    {/* Character illustration in scene */}
+                    <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                      <CharacterArt charId={char.id} size={56} />
                     </div>
                     {/* Active badge */}
                     {isActive && (
