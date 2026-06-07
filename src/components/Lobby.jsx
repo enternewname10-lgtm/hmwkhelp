@@ -71,7 +71,7 @@ export default function Lobby({ user, roomCode, isHost, gameMode, navigate }) {
                 }
                 <span>{p.name}</span>
                 {uid === game.host && (
-                  <span style={{ fontSize:11, color:'var(--gold)', fontWeight:800 }}>HOST</span>
+                  <span style={{ fontSize:11, color:'var(--gold)', fontWeight:600 }}>host</span>
                 )}
               </div>
             ))}
@@ -85,11 +85,11 @@ export default function Lobby({ user, roomCode, isHost, gameMode, navigate }) {
             onClick={handleStart}
             disabled={players.length < 1}
           >
-            🚀 Start Game ({players.length} player{players.length !== 1 ? 's' : ''})
+            Start Game ({players.length} player{players.length !== 1 ? 's' : ''})
           </button>
         ) : (
-          <div className="card" style={{ textAlign:'center', color:'var(--muted)', fontWeight:700 }}>
-            ⏳ Waiting for the host to start the game...
+          <div className="card" style={{ textAlign:'center', color:'var(--muted)', fontWeight:500, fontSize:14 }}>
+            Waiting for the host to start...
           </div>
         )}
 

@@ -15,8 +15,10 @@ export default function Login() {
     <div className="screen">
       <div className="login-wrapper">
         <div className="login-logo">🧮</div>
-        <h1 className="login-title gradient-text">AlgebraBlast</h1>
-        <p className="login-sub">Master algebra. Earn coins. Collect characters. Beat your friends.</p>
+        <h1 className="login-title">AlgebraBlast</h1>
+        <p className="login-sub">
+          Multiplayer algebra for grades 6–8. Solve equations, beat classmates, collect characters.
+        </p>
 
         <button className="google-btn" onClick={handleGoogle}>
           <svg className="google-icon" viewBox="0 0 24 24">
@@ -28,8 +30,8 @@ export default function Login() {
           Continue with Google
         </button>
 
-        <p style={{ marginTop: 32, fontSize: 13, color: 'var(--muted)' }}>
-          Grade 6–8 algebra practice · Room-code multiplayer · Earn &amp; collect characters
+        <p style={{ marginTop: 24, fontSize: 12, color: 'var(--subtle)' }}>
+          No account needed · Sign in and play
         </p>
       </div>
     </div>

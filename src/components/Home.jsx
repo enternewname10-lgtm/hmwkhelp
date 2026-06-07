@@ -15,11 +15,11 @@ function generateRoomCode() {
 
 export default function Home({ user, userDoc, navigate }) {
   const [joinCode,        setJoinCode]        = useState('')
-  const [view,            setView]            = useState('main') // 'main' | 'create' | 'join' | 'customQ'
+  const [view,            setView]            = useState('main')
   const [error,           setError]           = useState('')
   const [creating,        setCreating]        = useState(false)
   const [modeChoice,      setModeChoice]      = useState('regular')
-  const [questionMode,    setQuestionMode]    = useState('random') // 'random' | 'custom'
+  const [questionMode,    setQuestionMode]    = useState('random')
   const [customQuestions, setCustomQuestions] = useState([])
   const [qForm,           setQForm]           = useState({ equation: '', answer: '', hint: '' })
   const [qError,          setQError]          = useState('')
@@ -92,60 +92,88 @@ export default function Home({ user, userDoc, navigate }) {
 
   const handleSignOut = () => signOut(auth)
 
+  const selectionStyle = (active) => ({
+    padding: '11px 14px',
+    borderRadius: 8,
+    cursor: 'pointer',
+    border: `1px solid ${active ? 'var(--primary)' : 'var(--border)'}`,
+    background: active ? 'var(--primary-dim)' : 'transparent',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 2,
+    marginBottom: 6,
+    transition: 'all 0.12s',
+  })
+
   return (
     <div className="screen-top">
       {/* Header */}
       <div className="home-header">
-        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <span style={{ fontSize:24 }}>🧮</span>
-          <span className="nav-title">AlgebraBlast</span>
-        </div>
+        <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--text)' }}>
+          AlgebraBlast
+        </span>
         <div className="home-user">
-          <div className="coin-badge" style={admin ? { borderColor:'var(--gold)', color:'#92400e' } : {}}>
-            🪙 {admin ? '∞' : coins.toLocaleString()}
-          </div>
-          {admin && <span title="Admin" style={{ fontSize:18 }}>👑</span>}
-          <img src={user?.photoURL} alt="avatar" className="avatar" width={36} height={36} />
+          <div className="coin-badge">🪙 {admin ? '∞' : coins.toLocaleString()}</div>
+          {admin && (
+            <span style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 500 }}>Admin</span>
+          )}
+          <img src={user?.photoURL} alt="avatar" className="avatar" width={30} height={30} />
           <button className="btn btn-ghost btn-sm" onClick={handleSignOut}>Sign out</button>
         </div>
       </div>
 
       {/* Welcome */}
-      <div style={{ textAlign:'center', marginBottom:28 }}>
-        {activeChar && (
-          <div style={{ fontSize:52, marginBottom:4 }} title={activeChar.name}>{activeChar.emoji}</div>
-        )}
-        <h2>Welcome back, <span className="gradient-text">{user?.displayName?.split(' ')[0]}</span></h2>
-        <p style={{ marginTop:4 }}>
-          {activeChar
-            ? <>Playing as <strong style={{ color:'var(--cyan)' }}>{activeChar.name}</strong> · <span style={{ cursor:'pointer', textDecoration:'underline' }} onClick={() => navigate('stats')}>Change</span></>
-            : <>No character · <span style={{ cursor:'pointer', color:'var(--cyan)', textDecoration:'underline' }} onClick={() => navigate('stats')}>Pick one from Stats</span></>
-          }
+      <div style={{ width: '100%', maxWidth: 660, marginBottom: 28 }}>
+        <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 4 }}>
+          {activeChar ? (
+            <>
+              {activeChar.emoji} Playing as{' '}
+              <strong style={{ color: 'var(--text-2)', fontWeight: 500 }}>{activeChar.name}</strong>
+              {' · '}
+              <span
+                style={{ cursor: 'pointer', color: 'var(--primary)', textDecoration: 'underline' }}
+                onClick={() => navigate('stats')}
+              >
+                Change
+              </span>
+            </>
+          ) : (
+            <>
+              No character selected{' · '}
+              <span
+                style={{ cursor: 'pointer', color: 'var(--primary)', textDecoration: 'underline' }}
+                onClick={() => navigate('stats')}
+              >
+                Pick one
+              </span>
+            </>
+          )}
         </p>
+        <h2>Hi, {user?.displayName?.split(' ')[0]}</h2>
       </div>
 
       {/* ── Main menu ── */}
       {view === 'main' && (
         <div className="home-grid">
           <div className="home-card" onClick={() => setView('create')}>
-            <span className="home-card-emoji">🎮</span>
-            <span className="home-card-title">Create Game</span>
-            <span className="home-card-sub">Host a room for friends</span>
+            <div className="home-card-icon">🎮</div>
+            <div className="home-card-title">Create Game</div>
+            <div className="home-card-sub">Host a room for your class</div>
           </div>
           <div className="home-card" onClick={() => { setView('join'); setError('') }}>
-            <span className="home-card-emoji">🚪</span>
-            <span className="home-card-title">Join Game</span>
-            <span className="home-card-sub">Enter a room code</span>
+            <div className="home-card-icon">🚪</div>
+            <div className="home-card-title">Join Game</div>
+            <div className="home-card-sub">Enter a room code</div>
           </div>
           <div className="home-card" onClick={() => navigate('market')}>
-            <span className="home-card-emoji">🛒</span>
-            <span className="home-card-title">Market</span>
-            <span className="home-card-sub">Spend coins on packs</span>
+            <div className="home-card-icon">🛒</div>
+            <div className="home-card-title">Market</div>
+            <div className="home-card-sub">Spend coins on character packs</div>
           </div>
           <div className="home-card" onClick={() => navigate('stats')}>
-            <span className="home-card-emoji">📊</span>
-            <span className="home-card-title">Stats</span>
-            <span className="home-card-sub">Wins, losses &amp; collection</span>
+            <div className="home-card-icon">📊</div>
+            <div className="home-card-title">Stats</div>
+            <div className="home-card-sub">Your record and collection</div>
           </div>
         </div>
       )}
@@ -153,73 +181,61 @@ export default function Home({ user, userDoc, navigate }) {
       {/* ── Create game ── */}
       {view === 'create' && (
         <div className="join-card card">
-          <h3 style={{ textAlign:'center' }}>Create Game</h3>
+          <h3>Create a Game</h3>
 
-          {/* Mode picker */}
-          <p style={{ fontWeight:500, color:'var(--text)', fontSize:13, marginBottom:4 }}>Game mode</p>
-          {[
-            { id:'regular', emoji:'🧮', label:'Regular',  sub:'Answer fast · earn kg · climb the leaderboard' },
-            { id:'fishing', emoji:'🎣', label:'Fishing',  sub:'Get it right → cast your rod → catch fish' },
-          ].map(m => (
-            <div
-              key={m.id}
-              onClick={() => setModeChoice(m.id)}
-              style={{
-                padding:'12px 16px', borderRadius:10, cursor:'pointer',
-                border:`2px solid ${modeChoice === m.id ? 'var(--cyan)' : '#e2e8f0'}`,
-                background: modeChoice === m.id ? 'rgba(14,165,233,0.07)' : '#fafafa',
-                display:'flex', flexDirection:'column', gap:2, transition:'all 0.12s',
-              }}
-            >
-              <span style={{ fontWeight:600, fontSize:15 }}>{m.emoji} {m.label}</span>
-              <span style={{ fontSize:12, color:'var(--muted)' }}>{m.sub}</span>
-            </div>
-          ))}
+          <div>
+            <p style={{ fontWeight: 500, color: 'var(--text-2)', fontSize: 13, marginBottom: 8 }}>Game mode</p>
+            {[
+              { id: 'regular', emoji: '🧮', label: 'Regular', sub: 'Answer fast · earn points · leaderboard' },
+              { id: 'fishing', emoji: '🎣', label: 'Fishing',  sub: 'Get it right → cast → catch fish' },
+            ].map(m => (
+              <div key={m.id} onClick={() => setModeChoice(m.id)} style={selectionStyle(modeChoice === m.id)}>
+                <span style={{ fontWeight: 600, fontSize: 14 }}>{m.emoji} {m.label}</span>
+                <span style={{ fontSize: 12, color: 'var(--muted)' }}>{m.sub}</span>
+              </div>
+            ))}
+          </div>
 
-          {/* Question type */}
-          <p style={{ fontWeight:500, color:'var(--text)', fontSize:13, marginBottom:4, marginTop:4 }}>Questions</p>
-          {[
-            { id:'random',  emoji:'🔀', label:'Random',       sub:'10 shuffled algebra questions' },
-            { id:'custom',  emoji:'✏️', label:'My own',        sub:'Write your own equations' },
-          ].map(q => (
-            <div
-              key={q.id}
-              onClick={() => setQuestionMode(q.id)}
-              style={{
-                padding:'12px 16px', borderRadius:10, cursor:'pointer',
-                border:`2px solid ${questionMode === q.id ? 'var(--purple)' : '#e2e8f0'}`,
-                background: questionMode === q.id ? 'rgba(99,102,241,0.07)' : '#fafafa',
-                display:'flex', flexDirection:'column', gap:2, transition:'all 0.12s',
-              }}
-            >
-              <span style={{ fontWeight:600, fontSize:15 }}>{q.emoji} {q.label}</span>
-              <span style={{ fontSize:12, color:'var(--muted)' }}>{q.sub}</span>
-            </div>
-          ))}
+          <div>
+            <p style={{ fontWeight: 500, color: 'var(--text-2)', fontSize: 13, marginBottom: 8 }}>Questions</p>
+            {[
+              { id: 'random', emoji: '🔀', label: 'Random', sub: '10 shuffled algebra questions' },
+              { id: 'custom', emoji: '✏️', label: 'Custom',  sub: 'Write your own equations' },
+            ].map(q => (
+              <div key={q.id} onClick={() => setQuestionMode(q.id)} style={selectionStyle(questionMode === q.id)}>
+                <span style={{ fontWeight: 600, fontSize: 14 }}>{q.emoji} {q.label}</span>
+                <span style={{ fontSize: 12, color: 'var(--muted)' }}>{q.sub}</span>
+              </div>
+            ))}
+          </div>
 
           {/* Custom question builder */}
           {questionMode === 'custom' && (
-            <div style={{ marginTop:4, display:'flex', flexDirection:'column', gap:8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <div style={{
-                background:'#f8faff', border:'1.5px solid #e2e8f0',
-                borderRadius:10, padding:14, display:'flex', flexDirection:'column', gap:8,
+                background: 'var(--surface)',
+                border: '1px solid var(--border)',
+                borderRadius: 8,
+                padding: 12,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
               }}>
                 <input
                   type="text"
-                  placeholder="Equation  e.g.  2x + 3 = 9"
+                  placeholder="Equation — e.g. 2x + 3 = 9"
                   value={qForm.equation}
                   onChange={e => setQForm(f => ({ ...f, equation: e.target.value }))}
                   onKeyDown={e => e.key === 'Enter' && addQuestion()}
-                  style={{ fontSize:15 }}
                 />
-                <div style={{ display:'flex', gap:8 }}>
+                <div style={{ display: 'flex', gap: 8 }}>
                   <input
                     type="number"
-                    placeholder="Answer  e.g.  3"
+                    placeholder="Answer"
                     value={qForm.answer}
                     onChange={e => setQForm(f => ({ ...f, answer: e.target.value }))}
                     onKeyDown={e => e.key === 'Enter' && addQuestion()}
-                    style={{ flex:1, fontSize:15 }}
+                    style={{ flex: 1 }}
                   />
                   <input
                     type="text"
@@ -227,38 +243,39 @@ export default function Home({ user, userDoc, navigate }) {
                     value={qForm.hint}
                     onChange={e => setQForm(f => ({ ...f, hint: e.target.value }))}
                     onKeyDown={e => e.key === 'Enter' && addQuestion()}
-                    style={{ flex:2, fontSize:15 }}
+                    style={{ flex: 2 }}
                   />
                 </div>
-                {qError && <p style={{ color:'var(--red)', fontSize:12, margin:0 }}>{qError}</p>}
-                <button className="btn btn-cyan btn-full" style={{ padding:'10px' }} onClick={addQuestion}>
-                  + Add Question
+                {qError && <p style={{ color: 'var(--danger)', fontSize: 12, margin: 0 }}>{qError}</p>}
+                <button className="btn btn-primary btn-full" style={{ padding: 9 }} onClick={addQuestion}>
+                  Add Question
                 </button>
               </div>
 
-              {/* Question list */}
-              {customQuestions.length > 0 && (
-                <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+              {customQuestions.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                   {customQuestions.map((q, i) => (
                     <div key={i} style={{
-                      display:'flex', alignItems:'center', gap:8,
-                      background:'#fff', border:'1px solid #e2e8f0',
-                      borderRadius:8, padding:'8px 12px',
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      background: 'var(--card)', border: '1px solid var(--border)',
+                      borderRadius: 7, padding: '7px 12px',
                     }}>
-                      <span style={{ width:22, height:22, background:'var(--cyan)', color:'#fff', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:600, flexShrink:0 }}>{i+1}</span>
-                      <span style={{ flex:1, fontSize:14, fontWeight:500 }}>{q.equation}</span>
-                      <span style={{ fontSize:13, color:'var(--muted)' }}>= {q.answer}</span>
+                      <span style={{
+                        width: 20, height: 20, background: 'var(--primary)', color: '#fff',
+                        borderRadius: '50%', display: 'flex', alignItems: 'center',
+                        justifyContent: 'center', fontSize: 10, fontWeight: 600, flexShrink: 0,
+                      }}>{i + 1}</span>
+                      <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{q.equation}</span>
+                      <span style={{ fontSize: 12, color: 'var(--muted)' }}>= {q.answer}</span>
                       <button
                         onClick={() => removeQuestion(i)}
-                        style={{ background:'none', border:'none', cursor:'pointer', color:'var(--red)', fontSize:16, padding:0, lineHeight:1 }}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', fontSize: 15, padding: 0, lineHeight: 1 }}
                       >✕</button>
                     </div>
                   ))}
                 </div>
-              )}
-
-              {customQuestions.length === 0 && (
-                <p style={{ textAlign:'center', fontSize:13, color:'var(--muted)' }}>No questions yet — add one above.</p>
+              ) : (
+                <p style={{ textAlign: 'center', fontSize: 13, color: 'var(--muted)' }}>No questions yet — add one above.</p>
               )}
             </div>
           )}
@@ -268,7 +285,7 @@ export default function Home({ user, userDoc, navigate }) {
             onClick={handleCreate}
             disabled={creating || (questionMode === 'custom' && customQuestions.length === 0)}
           >
-            {creating ? 'Creating...' : '🚀 Create Room'}
+            {creating ? 'Creating...' : 'Create Room'}
           </button>
           <button className="btn btn-ghost btn-full" onClick={() => setView('main')}>Back</button>
         </div>
@@ -277,18 +294,18 @@ export default function Home({ user, userDoc, navigate }) {
       {/* ── Join game ── */}
       {view === 'join' && (
         <div className="join-card card">
-          <h3 style={{ textAlign:'center' }}>Join a Game</h3>
+          <h3>Join a Game</h3>
           <input
             type="text"
-            placeholder="Enter room code  e.g. AB1234"
+            placeholder="Room code — e.g. AB1234"
             value={joinCode}
             onChange={e => { setJoinCode(e.target.value.toUpperCase()); setError('') }}
             maxLength={6}
             onKeyDown={e => e.key === 'Enter' && handleJoin()}
-            style={{ textAlign:'center', letterSpacing:4, fontSize:22 }}
+            style={{ textAlign: 'center', letterSpacing: 5, fontSize: 20, fontWeight: 600 }}
           />
-          {error && <p style={{ color:'var(--red)', textAlign:'center', fontWeight:500, fontSize:14 }}>{error}</p>}
-          <button className="btn btn-cyan btn-full" onClick={handleJoin}>Join Room</button>
+          {error && <p style={{ color: 'var(--danger)', fontSize: 13 }}>{error}</p>}
+          <button className="btn btn-primary btn-full" onClick={handleJoin}>Join Room</button>
           <button className="btn btn-ghost btn-full" onClick={() => setView('main')}>Back</button>
         </div>
       )}

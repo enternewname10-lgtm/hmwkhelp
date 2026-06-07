@@ -40,15 +40,13 @@ export default function Results({ user, roomCode, navigate }) {
       <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:20, width:'100%' }}>
         {/* Header */}
         <div style={{ textAlign:'center' }}>
-          <div style={{ fontSize:64, marginBottom:8 }}>
-            {myRank === 1 ? '🏆' : myRank === 2 ? '🥈' : myRank === 3 ? '🥉' : '🎮'}
-          </div>
-          <h1 className="gradient-text">
-            {myRank === 1 ? 'You Won!' : `You Finished #${myRank}`}
+          <h1 style={{ marginBottom:6 }}>
+            {myRank === 1 ? 'You Won' : `#${myRank} Place`}
           </h1>
-          <p style={{ marginTop:8 }}>
-            Score: <strong style={{ color:'var(--cyan)' }}>{myScore.toLocaleString()} pts</strong> &nbsp;·&nbsp;
-            Earned: <strong style={{ color:'var(--gold)' }}>+{myCoins} 🪙</strong>
+          <p style={{ marginTop:4 }}>
+            <strong style={{ color:'var(--primary)', fontWeight:600 }}>{myScore.toLocaleString()} pts</strong>
+            {' · '}
+            <strong style={{ color:'var(--gold)', fontWeight:600 }}>+{myCoins} coins</strong>
           </p>
         </div>
 
@@ -100,8 +98,8 @@ export default function Results({ user, roomCode, navigate }) {
         </div>
 
         <div style={{ display:'flex', gap:12 }}>
-          <button className="btn btn-ghost" onClick={() => navigate('market')}>🛒 Market</button>
-          <button className="btn btn-primary btn-lg" onClick={handleHome}>🏠 Home</button>
+          <button className="btn btn-ghost" onClick={() => navigate('market')}>Market</button>
+          <button className="btn btn-primary btn-lg" onClick={handleHome}>Back to Home</button>
         </div>
       </div>
     </div>

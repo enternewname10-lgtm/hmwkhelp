@@ -19,20 +19,20 @@ function Confetti({ color }) {
     }
   })
   return (
-    <div style={{ position:'absolute', inset:0, pointerEvents:'none', display:'flex', alignItems:'center', justifyContent:'center' }}>
+    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       {pieces.map(p => (
         <div key={p.id} style={{
-          position:        'absolute',
-          width:           p.shape === 2 ? p.size * 2 : p.size,
-          height:          p.size,
-          background:      color,
-          borderRadius:    p.shape === 0 ? '50%' : 3,
-          opacity:         0,
-          '--tx':          `${p.tx}px`,
-          '--ty':          `${p.ty}px`,
-          '--rot':         `${p.rot}deg`,
-          animation:       `confettiBurst 0.9s ease-out forwards`,
-          animationDelay:  `${p.delay}s`,
+          position:       'absolute',
+          width:          p.shape === 2 ? p.size * 2 : p.size,
+          height:         p.size,
+          background:     color,
+          borderRadius:   p.shape === 0 ? '50%' : 3,
+          opacity:        0,
+          '--tx':         `${p.tx}px`,
+          '--ty':         `${p.ty}px`,
+          '--rot':        `${p.rot}deg`,
+          animation:      'confettiBurst 0.9s ease-out forwards',
+          animationDelay: `${p.delay}s`,
         }} />
       ))}
     </div>
@@ -51,11 +51,10 @@ function PackOpeningScene({ pack }) {
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4) }
   }, [])
 
-  const labels = ['', `Opening ${pack.name}...`, '✂️ Slicing...', '🎁 Opening...', '✨ Almost there...']
+  const labels = ['', `Opening ${pack.name}...`, 'Slicing...', 'Opening...', 'Almost there...']
 
   return (
     <div className="overlay" style={{ background: 'rgba(0,0,0,0.95)' }}>
-      {/* Radial glow behind pack */}
       {stage >= 3 && (
         <div style={{
           position: 'absolute', inset: 0, pointerEvents: 'none',
@@ -65,7 +64,6 @@ function PackOpeningScene({ pack }) {
       )}
 
       <div style={{ textAlign: 'center', position: 'relative' }}>
-        {/* Pack card */}
         <div style={{
           position: 'relative',
           width: 160,
@@ -77,8 +75,6 @@ function PackOpeningScene({ pack }) {
           transition: 'transform 0.45s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s',
           animation: stage === 1 ? 'packWiggle 0.6s ease-in-out' : undefined,
         }}>
-
-          {/* Pack body */}
           <div style={{
             position: 'absolute', inset: 0,
             background: `linear-gradient(160deg, ${pack.color}55 0%, ${pack.color}22 60%, rgba(255,255,255,0.06) 100%)`,
@@ -93,10 +89,9 @@ function PackOpeningScene({ pack }) {
             <span style={{ fontSize: 56, filter: stage >= 3 ? `drop-shadow(0 0 12px ${pack.color})` : undefined, transition: 'filter 0.4s' }}>
               {pack.emoji}
             </span>
-            <span style={{ fontSize: 13, fontWeight: 900, color: pack.color, letterSpacing: 1 }}>{pack.name}</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: pack.color, letterSpacing: 1 }}>{pack.name}</span>
           </div>
 
-          {/* Cut line sweeping across */}
           {stage >= 2 && (
             <div style={{
               position: 'absolute',
@@ -109,7 +104,6 @@ function PackOpeningScene({ pack }) {
             }} />
           )}
 
-          {/* Flap (top portion flips back) */}
           {stage >= 3 && (
             <div style={{
               position: 'absolute',
@@ -125,7 +119,6 @@ function PackOpeningScene({ pack }) {
             }} />
           )}
 
-          {/* Glow pouring out from the cut */}
           {stage >= 3 && (
             <div style={{
               position: 'absolute',
@@ -138,7 +131,6 @@ function PackOpeningScene({ pack }) {
           )}
         </div>
 
-        {/* Floating sparkles */}
         {stage >= 2 && (
           <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
             {['✨','⭐','💫','🌟','✨','⭐','💫','✨'].map((s, i) => (
@@ -157,14 +149,14 @@ function PackOpeningScene({ pack }) {
 
         <div style={{
           color: pack.color,
-          fontWeight: 900,
-          fontSize: 22,
+          fontWeight: 600,
+          fontSize: 18,
           marginTop: 32,
           opacity: stage >= 1 ? 1 : 0,
           transition: 'opacity 0.3s',
           textShadow: `0 0 20px ${pack.color}`,
         }}>
-          {labels[stage] || '✨ Almost there...'}
+          {labels[stage] || 'Almost there...'}
         </div>
       </div>
     </div>
@@ -172,15 +164,15 @@ function PackOpeningScene({ pack }) {
 }
 
 export default function Market({ user, userDoc, navigate }) {
-  const [reveal,  setReveal]  = useState(null)   // { char, pack }
-  const [spinning, setSpinning] = useState(null) // pack being opened
-  const [message, setMessage] = useState('')
+  const [reveal,   setReveal]   = useState(null)
+  const [spinning, setSpinning] = useState(null)
+  const [message,  setMessage]  = useState('')
 
   const admin = isAdmin(user)
   const coins = userDoc?.coins ?? 0
 
   const handleBuy = async (pack) => {
-    if (!admin && coins < pack.cost) { setMessage("Not enough coins! Play more games to earn coins."); return }
+    if (!admin && coins < pack.cost) { setMessage('Not enough coins — play more games to earn some.'); return }
     setMessage('')
     setSpinning(pack)
 
@@ -190,7 +182,6 @@ export default function Market({ user, userDoc, navigate }) {
     if (!admin) firestoreUpdate.coins = increment(-pack.cost)
     await updateDoc(userRef, firestoreUpdate)
 
-    // Let animation play for 1.8s before revealing
     setTimeout(() => {
       setSpinning(null)
       setReveal({ char, pack })
@@ -199,33 +190,28 @@ export default function Market({ user, userDoc, navigate }) {
 
   return (
     <div className="screen-top">
-      {/* Nav */}
       <div className="nav-bar">
-        <span className="nav-title">🛒 Market</span>
-        <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+        <span className="nav-title">Market</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div className="coin-badge">🪙 {admin ? '∞' : coins.toLocaleString()}</div>
           <button className="btn btn-ghost btn-sm" onClick={() => navigate('home')}>← Back</button>
         </div>
       </div>
 
-      <h2 style={{ textAlign:'center', marginBottom:8 }}>Character Packs</h2>
-      <p style={{ textAlign:'center', color:'var(--muted)', marginBottom:24, fontSize:14 }}>
-        Open packs to collect characters. Rarer characters are harder to get!
-      </p>
+      <div style={{ width: '100%', maxWidth: 840, marginTop: 8, marginBottom: 24 }}>
+        <h2 style={{ marginBottom: 4 }}>Character Packs</h2>
+        <p>Open packs to collect characters. Rarer pulls are harder to get.</p>
+      </div>
 
       {message && (
-        <div style={{ color:'var(--red)', fontWeight:700, marginBottom:16, textAlign:'center' }}>{message}</div>
+        <p style={{ color: 'var(--danger)', fontWeight: 500, marginBottom: 16, fontSize: 14 }}>{message}</p>
       )}
 
       <div className="market-grid">
         {packs.map(pack => (
-          <div
-            className="pack-card"
-            key={pack.id}
-            style={{ borderColor: coins >= pack.cost ? pack.color + '55' : 'var(--border)' }}
-          >
+          <div className="pack-card" key={pack.id}>
             <span className="pack-emoji">{pack.emoji}</span>
-            <span className="pack-name" style={{ color: pack.color }}>{pack.name}</span>
+            <span className="pack-name">{pack.name}</span>
             <span className="pack-cost">🪙 {pack.cost}</span>
 
             <div className="pack-odds">
@@ -240,15 +226,9 @@ export default function Market({ user, userDoc, navigate }) {
               ))}
             </div>
 
-            <div style={{ display:'flex', gap:6, fontSize:22, margin:'6px 0' }}>
-              {pack.characters.map(c => (
-                <span key={c.id} title={`${c.name} (${c.rarity})`}>{c.emoji}</span>
-              ))}
-            </div>
-
             <button
               className="btn btn-primary btn-sm btn-full"
-              style={{ marginTop:8, background: pack.color }}
+              style={{ marginTop: 6 }}
               disabled={(!admin && coins < pack.cost) || !!spinning}
               onClick={() => handleBuy(pack)}
             >
@@ -258,22 +238,20 @@ export default function Market({ user, userDoc, navigate }) {
         ))}
       </div>
 
-      {/* Pack opening scene */}
       {spinning && <PackOpeningScene pack={spinning} />}
 
-      {/* Reveal overlay */}
       {reveal && (
         <div className="overlay" onClick={() => setReveal(null)}>
           <Confetti color={rarityColors[reveal.char.rarity]} />
-          <div className="reveal-box" style={{ position:'relative', zIndex:1 }} onClick={e => e.stopPropagation()}>
-            <div style={{ color:'var(--muted)', fontSize:13, fontWeight:700, marginBottom:12 }}>
-              {reveal.pack.name} · You got...
+          <div className="reveal-box" style={{ position: 'relative', zIndex: 1 }} onClick={e => e.stopPropagation()}>
+            <div style={{ color: 'var(--subtle)', fontSize: 12, fontWeight: 500, marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
+              {reveal.pack.name}
             </div>
             <span
               className="reveal-char-emoji"
               style={{
                 animation: 'charReveal 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
-                filter: `drop-shadow(0 0 24px ${rarityColors[reveal.char.rarity]})`,
+                filter: `drop-shadow(0 0 20px ${rarityColors[reveal.char.rarity]})`,
               }}
             >
               {reveal.char.emoji}
@@ -282,24 +260,21 @@ export default function Market({ user, userDoc, navigate }) {
             <div
               className="reveal-rarity"
               style={{
-                background: rarityColors[reveal.char.rarity] + '33',
+                background: rarityColors[reveal.char.rarity] + '30',
                 color:      rarityColors[reveal.char.rarity],
-                border:     `1px solid ${rarityColors[reveal.char.rarity]}66`,
+                border:     `1px solid ${rarityColors[reveal.char.rarity]}55`,
               }}
             >
               {reveal.char.rarity}
             </div>
             {reveal.char.rarity === 'Legendary' && (
-              <div style={{ fontSize:32, marginBottom:12, animation:'starFloat 0.8s ease-in-out infinite' }}>🎉 🏆 🎉</div>
+              <div style={{ fontSize: 20, marginBottom: 12, color: '#fbbf24', fontWeight: 600 }}>Legendary pull!</div>
             )}
             {reveal.char.rarity === 'Epic' && (
-              <div style={{ fontSize:24, marginBottom:12 }}>✨ Epic pull! ✨</div>
-            )}
-            {reveal.char.rarity === 'Rare' && (
-              <div style={{ fontSize:20, marginBottom:12 }}>💙 Nice pull!</div>
+              <div style={{ fontSize: 16, marginBottom: 12, color: '#a855f7', fontWeight: 600 }}>Epic pull!</div>
             )}
             <button className="btn btn-primary btn-full" onClick={() => setReveal(null)}>
-              Sweet!
+              Nice
             </button>
           </div>
         </div>
