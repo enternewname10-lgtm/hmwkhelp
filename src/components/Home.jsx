@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ref, set, get } from 'firebase/database'
 import { rtdb } from '../firebase'
 import { shuffleQuestions } from '../data/questions'
+import { findCharacter } from '../data/packs'
 import { isAdmin } from '../utils/admin'
 
 function generateRoomCode() {
@@ -24,15 +25,23 @@ export default function Home({ user, userDoc, navigate }) {
 
   const admin = isAdmin(user)
 
-  const myPlayerData = () => ({
-    name:           user.isAnonymous ? `Guest#${user.uid.slice(-4).toUpperCase()}` : user.displayName,
-    photoURL:       user.photoURL ?? null,
-    characterEmoji: userDoc?.activeCharacter ?? null,
-    isAdmin:        admin,
-    score:          0,
-    coinsEarned:    0,
-    answers:        {},
-  })
+  const myPlayerData = () => {
+    let characterEmoji = null
+    if (admin) {
+      characterEmoji = '🧙'
+    } else if (userDoc?.activeCharacter) {
+      characterEmoji = findCharacter(userDoc.activeCharacter)?.emoji ?? null
+    }
+    return {
+      name:           user.isAnonymous ? `Guest#${user.uid.slice(-4).toUpperCase()}` : user.displayName,
+      photoURL:       user.photoURL ?? null,
+      characterEmoji,
+      isAdmin:        admin,
+      score:          0,
+      coinsEarned:    0,
+      answers:        {},
+    }
+  }
 
   const handleCreate = async () => {
     if (questionMode === 'custom' && customQuestions.length === 0) {

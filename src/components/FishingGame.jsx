@@ -143,23 +143,22 @@ export default function FishingGame({ user, roomCode, isHost, navigate }) {
     if (game.status === 'finished') { finalizeStats(); navigate('results', { roomCode }); return }
     if (game.status !== 'question' && game.status !== 'reveal') return
 
+    const maxTime   = game.status === 'question' ? QUESTION_TIME : REVEAL_TIME
+    const startedAt = Date.now()
+
     clearInterval(timerRef.current)
+    setTimeLeft(maxTime)
+
     timerRef.current = setInterval(async () => {
-      if (!game.questionStartTime) return
-      if (game.status === 'question') {
-        const elapsed = (Date.now() - game.questionStartTime) / 1000
-        const rem = Math.max(0, QUESTION_TIME - elapsed)
-        setTimeLeft(Math.ceil(rem))
-        if (isHost && rem <= 0) {
-          clearInterval(timerRef.current)
+      const elapsed = (Date.now() - startedAt) / 1000
+      const rem     = Math.max(0, maxTime - elapsed)
+      setTimeLeft(Math.ceil(rem))
+
+      if (isHost && rem <= 0) {
+        clearInterval(timerRef.current)
+        if (game.status === 'question') {
           await update(ref(rtdb, `games/${roomCode}`), { status:'reveal', questionStartTime: Date.now() })
-        }
-      } else if (game.status === 'reveal') {
-        const elapsed = (Date.now() - game.questionStartTime) / 1000
-        const rem = Math.max(0, REVEAL_TIME - elapsed)
-        setTimeLeft(Math.ceil(rem))
-        if (isHost && rem <= 0) {
-          clearInterval(timerRef.current)
+        } else {
           const nextQ = (game.currentQuestion ?? 0) + 1
           if (nextQ >= (game.questions?.length ?? 10)) {
             await update(ref(rtdb, `games/${roomCode}`), { status:'finished' })
@@ -172,7 +171,7 @@ export default function FishingGame({ user, roomCode, isHost, navigate }) {
       }
     }, 200)
     return () => clearInterval(timerRef.current)
-  }, [game?.status, game?.questionStartTime, game?.currentQuestion])
+  }, [game?.status, game?.currentQuestion])
 
   useEffect(() => {
     if (!game || !isHost || game.status !== 'question') return
@@ -190,7 +189,7 @@ export default function FishingGame({ user, roomCode, isHost, navigate }) {
   }, [game?.status])
 
   const finalizeStats = async () => {
-    if (!game || !user) return
+    if (!game || !user || user.isAnonymous) return
     const players = game.players ?? {}
     const myData  = players[user.uid]
     if (!myData) return
@@ -223,7 +222,7 @@ export default function FishingGame({ user, roomCode, isHost, navigate }) {
 
   const handleFishingDone = async () => {
     setFishing(false)
-    const rarity = isAdmin(user) ? 'Legendary' : rollRarity(fishingRarityChances)
+    const rarity = rollRarity(fishingRarityChances)
     const caught = getCatch(rarity)
     setMyCatch(caught)
 

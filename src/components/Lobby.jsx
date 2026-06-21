@@ -67,9 +67,14 @@ export default function Lobby({ user, roomCode, isHost, gameMode, navigate }) {
               <div className="player-chip" key={uid}>
                 {p.characterEmoji
                   ? <span style={{ fontSize:20 }}>{p.characterEmoji}</span>
-                  : p.photoURL && <img src={p.photoURL} alt="" className="avatar" width={24} height={24} />
+                  : p.photoURL
+                    ? <img src={p.photoURL} alt="" className="avatar" width={24} height={24} />
+                    : <span style={{ fontSize:18 }}>👤</span>
                 }
-                <span>{p.name}</span>
+                <span style={{ flex: 1 }}>
+                  {p.name}
+                  {p.isAdmin && <span style={{ fontSize:10, color:'var(--primary)', fontWeight:600, marginLeft:5 }}>Admin</span>}
+                </span>
                 {uid === game.host && (
                   <span style={{ fontSize:11, color:'var(--gold)', fontWeight:600 }}>host</span>
                 )}
