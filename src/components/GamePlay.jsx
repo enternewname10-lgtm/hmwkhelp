@@ -49,24 +49,22 @@ export default function GamePlay({ user, roomCode, isHost, navigate }) {
     if (game.status === 'finished') { navigate('results'); return }
     if (game.status !== 'question' && game.status !== 'reveal') return
 
-    clearInterval(timerRef.current)
-    timerRef.current = setInterval(async () => {
-      if (!game.questionStartTime) return
+    const maxTime  = game.status === 'question' ? QUESTION_TIME : REVEAL_TIME
+    const startedAt = Date.now()
 
-      if (game.status === 'question') {
-        const elapsed = (Date.now() - game.questionStartTime) / 1000
-        const remaining = Math.max(0, QUESTION_TIME - elapsed)
-        setTimeLeft(Math.ceil(remaining))
-        if (isHost && remaining <= 0) {
-          clearInterval(timerRef.current)
+    clearInterval(timerRef.current)
+    setTimeLeft(maxTime)
+
+    timerRef.current = setInterval(async () => {
+      const elapsed   = (Date.now() - startedAt) / 1000
+      const remaining = Math.max(0, maxTime - elapsed)
+      setTimeLeft(Math.ceil(remaining))
+
+      if (isHost && remaining <= 0) {
+        clearInterval(timerRef.current)
+        if (game.status === 'question') {
           await update(ref(rtdb, `games/${roomCode}`), { status: 'reveal', questionStartTime: Date.now() })
-        }
-      } else if (game.status === 'reveal') {
-        const elapsed = (Date.now() - game.questionStartTime) / 1000
-        const remaining = Math.max(0, REVEAL_TIME - elapsed)
-        setTimeLeft(Math.ceil(remaining))
-        if (isHost && remaining <= 0) {
-          clearInterval(timerRef.current)
+        } else {
           const nextQ = (game.currentQuestion ?? 0) + 1
           const total = game.questions?.length ?? 10
           if (nextQ >= total) {
@@ -81,7 +79,7 @@ export default function GamePlay({ user, roomCode, isHost, navigate }) {
     }, 200)
 
     return () => clearInterval(timerRef.current)
-  }, [game?.status, game?.questionStartTime, game?.currentQuestion])
+  }, [game?.status, game?.currentQuestion])
 
   useEffect(() => {
     if (!game || !isHost || game.status !== 'question') return
@@ -231,12 +229,12 @@ export default function GamePlay({ user, roomCode, isHost, navigate }) {
                   <div style={{ marginTop:8, fontSize:18 }}>
                     {myCatch.emoji} <strong>{myCatch.name}</strong>
                     <span style={{ color: fishRarityColors[myCatch.rarity], marginLeft:8 }}>{myCatch.rarity}</span>
-                    <span style={{ marginLeft:8, color:'var(--cyan)' }}>+{myCatch.kg} kg</span>
+                    <span style={{ marginLeft:8, color:'var(--cyan)' }}>+{myCatch.kg} pts</span>
                   </div>
                 )}
                 {myCatch && myCatch.kg === 0 && (
                   <div style={{ marginTop:8, fontSize:16, color:'var(--muted)' }}>
-                    {myCatch.emoji} {myCatch.name} — no kg!
+                    {myCatch.emoji} {myCatch.name} — 0 pts
                   </div>
                 )}
               </div>
@@ -250,7 +248,7 @@ export default function GamePlay({ user, roomCode, isHost, navigate }) {
                 <div style={{ color:'var(--cyan)', fontWeight:700, marginBottom:16 }}>{question.explanation}</div>
                 {myResult === 'correct' && myCatch && (
                   <div style={{ color: fishRarityColors[myCatch.rarity] ?? 'var(--gold)', fontWeight:900, fontSize:20 }}>
-                    {myCatch.emoji} +{myCatch.kg} kg &nbsp;· +50 🪙
+                    {myCatch.emoji} +{myCatch.kg} pts &nbsp;· +50 🪙
                   </div>
                 )}
                 {myResult === 'incorrect' && (
@@ -279,7 +277,7 @@ export default function GamePlay({ user, roomCode, isHost, navigate }) {
                   <span style={{ overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', flex:1 }}>
                     {p.name?.split(' ')[0]}
                   </span>
-                  <span className="score-pts">{(p.score ?? 0).toFixed(1)} kg</span>
+                  <span className="score-pts">{Math.round(p.score ?? 0)} pts</span>
                 </div>
               ))}
             </div>
