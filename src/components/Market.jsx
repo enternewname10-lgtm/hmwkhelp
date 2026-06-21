@@ -41,120 +41,180 @@ function Confetti({ color }) {
 
 function PackOpeningScene({ pack }) {
   const [stage, setStage] = useState(0)
-  // 0=appear  1=wiggle  2=cut-line  3=flap-open  4=glow
+  // 0=appear  1=wiggle  2=cut-line  3=flap-open  4=burst
 
   useEffect(() => {
-    const t1 = setTimeout(() => setStage(1), 300)
-    const t2 = setTimeout(() => setStage(2), 850)
-    const t3 = setTimeout(() => setStage(3), 1300)
-    const t4 = setTimeout(() => setStage(4), 1700)
+    const t1 = setTimeout(() => setStage(1), 250)
+    const t2 = setTimeout(() => setStage(2), 800)
+    const t3 = setTimeout(() => setStage(3), 1200)
+    const t4 = setTimeout(() => setStage(4), 1650)
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4) }
   }, [])
 
-  const labels = ['', `Opening ${pack.name}...`, 'Slicing...', 'Opening...', 'Almost there...']
+  const labels = ['', `Opening ${pack.name}...`, 'Tearing open...', 'Revealing...', 'Almost there...']
+
+  const particles = Array.from({ length: 18 }, (_, i) => ({
+    id: i,
+    angle: (i / 18) * 360,
+    dist: 80 + (i % 3) * 30,
+    size: 4 + (i % 4) * 2,
+    delay: i * 0.03,
+  }))
 
   return (
-    <div className="overlay" style={{ background: 'rgba(0,0,0,0.95)' }}>
-      {stage >= 3 && (
-        <div style={{
-          position: 'absolute', inset: 0, pointerEvents: 'none',
-          background: `radial-gradient(ellipse 50% 40% at 50% 50%, ${pack.color}28 0%, transparent 65%)`,
-          animation: 'glowPulse 1.2s ease-in-out infinite',
-        }} />
+    <div className="overlay" style={{
+      background: 'linear-gradient(180deg, #0a1628 0%, #0d2344 40%, #0f3460 70%, #1a4a7a 100%)',
+    }}>
+      {/* Ambient light bloom */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        background: stage >= 3
+          ? `radial-gradient(ellipse 60% 45% at 50% 42%, rgba(96,165,250,0.22) 0%, ${pack.color}18 40%, transparent 70%)`
+          : 'radial-gradient(ellipse 40% 30% at 50% 42%, rgba(96,165,250,0.08) 0%, transparent 60%)',
+        transition: 'background 0.6s ease',
+      }} />
+
+      {/* Star field */}
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+        {[...Array(24)].map((_, i) => (
+          <div key={i} style={{
+            position: 'absolute',
+            left: `${(i * 17 + 5) % 95}%`,
+            top: `${(i * 23 + 3) % 85}%`,
+            width: i % 4 === 0 ? 2 : 1,
+            height: i % 4 === 0 ? 2 : 1,
+            borderRadius: '50%',
+            background: '#fff',
+            opacity: 0.3 + (i % 3) * 0.2,
+          }} />
+        ))}
+      </div>
+
+      {/* Light particles burst on open */}
+      {stage >= 4 && (
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {particles.map(p => (
+            <div key={p.id} style={{
+              position: 'absolute',
+              width: p.size,
+              height: p.size,
+              borderRadius: '50%',
+              background: p.id % 2 === 0 ? '#bfdbfe' : pack.color,
+              opacity: 0,
+              '--tx': `${Math.cos(p.angle * Math.PI / 180) * p.dist}px`,
+              '--ty': `${Math.sin(p.angle * Math.PI / 180) * p.dist - 60}px`,
+              '--rot': '0deg',
+              animation: 'confettiBurst 0.75s ease-out forwards',
+              animationDelay: `${p.delay}s`,
+            }} />
+          ))}
+        </div>
       )}
 
       <div style={{ textAlign: 'center', position: 'relative' }}>
+        {/* Pack card */}
         <div style={{
           position: 'relative',
-          width: 160,
-          height: 220,
+          width: 180,
+          height: 252,
           margin: '0 auto',
-          perspective: '600px',
-          transform: stage === 0 ? 'scale(0.3)' : 'scale(1)',
-          opacity:   stage === 0 ? 0 : 1,
-          transition: 'transform 0.45s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s',
-          animation: stage === 1 ? 'packWiggle 0.6s ease-in-out' : undefined,
+          perspective: '800px',
+          transform: stage === 0 ? 'scale(0.25) translateY(30px)' : 'scale(1) translateY(0)',
+          opacity: stage === 0 ? 0 : 1,
+          transition: 'transform 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s',
+          animation: stage === 1 ? 'packWiggle 0.55s ease-in-out' : undefined,
+          filter: stage >= 4 ? `drop-shadow(0 0 28px ${pack.color}cc) drop-shadow(0 0 60px rgba(96,165,250,0.4))` : `drop-shadow(0 8px 24px rgba(0,0,0,0.6))`,
         }}>
+          {/* Main pack body */}
           <div style={{
             position: 'absolute', inset: 0,
-            background: `linear-gradient(160deg, ${pack.color}55 0%, ${pack.color}22 60%, rgba(255,255,255,0.06) 100%)`,
-            border: `2px solid ${pack.color}66`,
-            borderRadius: 16,
+            background: `linear-gradient(155deg, rgba(255,255,255,0.12) 0%, ${pack.color}44 30%, ${pack.color}28 65%, rgba(14,30,60,0.6) 100%)`,
+            border: `1.5px solid ${pack.color}88`,
+            borderRadius: 18,
             display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center', gap: 10,
+            alignItems: 'center', justifyContent: 'center', gap: 12,
             overflow: 'hidden',
-            boxShadow: stage >= 3 ? `0 0 40px ${pack.color}55, inset 0 0 20px ${pack.color}22` : undefined,
-            transition: 'box-shadow 0.4s',
+            backdropFilter: 'blur(2px)',
           }}>
-            <span style={{ fontSize: 56, filter: stage >= 3 ? `drop-shadow(0 0 12px ${pack.color})` : undefined, transition: 'filter 0.4s' }}>
+            {/* Foil shine */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: 'linear-gradient(115deg, rgba(255,255,255,0.18) 0%, transparent 35%, rgba(255,255,255,0.06) 55%, transparent 75%, rgba(255,255,255,0.1) 100%)',
+              borderRadius: 18,
+              pointerEvents: 'none',
+            }} />
+            {/* Top edge highlight */}
+            <div style={{
+              position: 'absolute', top: 0, left: 12, right: 12, height: 1,
+              background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)',
+              borderRadius: 1,
+            }} />
+            <span style={{
+              fontSize: 62,
+              position: 'relative', zIndex: 1,
+              filter: stage >= 4 ? `drop-shadow(0 0 16px ${pack.color})` : `drop-shadow(0 4px 8px rgba(0,0,0,0.5))`,
+              transition: 'filter 0.5s',
+            }}>
               {pack.emoji}
             </span>
-            <span style={{ fontSize: 13, fontWeight: 600, color: pack.color, letterSpacing: 1 }}>{pack.name}</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: pack.color, letterSpacing: 2, textTransform: 'uppercase', position: 'relative', zIndex: 1 }}>
+              {pack.name}
+            </span>
           </div>
 
+          {/* Tear line */}
           {stage >= 2 && (
             <div style={{
               position: 'absolute',
-              top: '28%', left: -4, right: -4,
-              height: 3,
-              background: `linear-gradient(90deg, transparent 0%, #fff 20%, ${pack.color} 50%, #fff 80%, transparent 100%)`,
-              boxShadow: `0 0 14px 4px ${pack.color}, 0 0 4px 1px #fff`,
-              animation: 'packCutLine 0.55s ease-out forwards',
+              top: '26%', left: -6, right: -6,
+              height: 4,
+              background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.6) 15%, #fff 35%, rgba(96,165,250,0.9) 50%, #fff 65%, rgba(255,255,255,0.6) 85%, transparent 100%)',
+              boxShadow: '0 0 16px 6px rgba(96,165,250,0.7), 0 0 6px 2px #fff',
+              animation: 'packCutLine 0.45s ease-out forwards',
               zIndex: 10,
             }} />
           )}
 
+          {/* Flap that opens back */}
           {stage >= 3 && (
             <div style={{
               position: 'absolute',
               top: 0, left: 0, right: 0,
-              height: '28%',
-              background: `linear-gradient(180deg, ${pack.color}88, ${pack.color}44)`,
-              border: `2px solid ${pack.color}88`,
+              height: '26%',
+              background: `linear-gradient(180deg, ${pack.color}bb 0%, ${pack.color}66 100%)`,
+              border: `1.5px solid ${pack.color}99`,
               borderBottom: 'none',
-              borderRadius: '16px 16px 0 0',
+              borderRadius: '18px 18px 0 0',
               transformOrigin: 'top center',
-              animation: 'packFlapOpen 0.6s cubic-bezier(0.4,0,0.2,1) forwards',
+              animation: 'packFlapOpen 0.55s cubic-bezier(0.4,0,0.2,1) forwards',
               zIndex: 11,
+              boxShadow: `inset 0 -4px 12px rgba(0,0,0,0.3)`,
             }} />
           )}
 
+          {/* Light flood from opening */}
           {stage >= 3 && (
             <div style={{
               position: 'absolute',
-              top: '28%', left: 0, right: 0,
-              height: 70,
-              background: `linear-gradient(180deg, ${pack.color}66 0%, transparent 100%)`,
-              animation: 'packGlowFlood 0.6s ease-out forwards',
+              top: '26%', left: 0, right: 0,
+              height: 90,
+              background: `linear-gradient(180deg, rgba(96,165,250,0.55) 0%, ${pack.color}33 40%, transparent 100%)`,
+              animation: 'packGlowFlood 0.55s ease-out forwards',
               zIndex: 9,
             }} />
           )}
         </div>
 
-        {stage >= 2 && (
-          <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
-            {['✨','⭐','💫','🌟','✨','⭐','💫','✨'].map((s, i) => (
-              <span key={i} style={{
-                position: 'absolute',
-                fontSize: 18 + (i % 3) * 8,
-                top:  `${15 + (i * 11) % 70}%`,
-                left: `${5  + (i * 13) % 90}%`,
-                animation: `starFloat ${0.9 + i * 0.12}s ease-in-out infinite`,
-                animationDelay: `${i * 0.08}s`,
-                opacity: 0.8,
-              }}>{s}</span>
-            ))}
-          </div>
-        )}
-
+        {/* Status text */}
         <div style={{
-          color: pack.color,
+          color: stage >= 4 ? '#bfdbfe' : 'rgba(148,163,184,0.9)',
           fontWeight: 600,
-          fontSize: 18,
-          marginTop: 32,
+          fontSize: 15,
+          marginTop: 36,
+          letterSpacing: 0.5,
           opacity: stage >= 1 ? 1 : 0,
-          transition: 'opacity 0.3s',
-          textShadow: `0 0 20px ${pack.color}`,
+          transition: 'opacity 0.3s, color 0.4s',
+          textShadow: stage >= 4 ? `0 0 24px rgba(96,165,250,0.8)` : undefined,
         }}>
           {labels[stage] || 'Almost there...'}
         </div>

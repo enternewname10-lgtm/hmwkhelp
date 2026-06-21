@@ -1,4 +1,4 @@
-import { signInWithPopup } from 'firebase/auth'
+import { signInWithPopup, signInAnonymously } from 'firebase/auth'
 import { auth, provider } from '../firebase'
 
 export default function Login() {
@@ -14,6 +14,15 @@ export default function Login() {
       } else {
         alert(`Sign-in failed: ${err.code ?? err.message}`)
       }
+    }
+  }
+
+  const handleGuest = async () => {
+    try {
+      await signInAnonymously(auth)
+    } catch (err) {
+      console.error(err)
+      alert(`Guest sign-in failed: ${err.code ?? err.message}`)
     }
   }
 
@@ -36,8 +45,12 @@ export default function Login() {
           Continue with Google
         </button>
 
-        <p style={{ marginTop: 24, fontSize: 12, color: 'var(--subtle)' }}>
-          No account needed · Sign in and play
+        <button className="guest-btn" onClick={handleGuest}>
+          Play as Guest
+        </button>
+
+        <p style={{ marginTop: 16, fontSize: 12, color: 'var(--subtle)' }}>
+          Guest progress is not saved · Sign in with Google to keep stats &amp; characters
         </p>
       </div>
     </div>

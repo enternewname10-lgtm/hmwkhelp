@@ -25,8 +25,8 @@ export default function Home({ user, userDoc, navigate }) {
   const admin = isAdmin(user)
 
   const myPlayerData = () => ({
-    name:           user.displayName,
-    photoURL:       user.photoURL,
+    name:           user.isAnonymous ? `Guest#${user.uid.slice(-4).toUpperCase()}` : user.displayName,
+    photoURL:       user.photoURL ?? null,
     characterEmoji: userDoc?.activeCharacter ?? null,
     isAdmin:        admin,
     score:          0,

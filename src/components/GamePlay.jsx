@@ -102,7 +102,7 @@ export default function GamePlay({ user, roomCode, isHost, navigate }) {
   }, [game?.status])
 
   const finalizeUserStats = async () => {
-    if (!game || !user) return
+    if (!game || !user || user.isAnonymous) return
     const players = game.players ?? {}
     const myData  = players[user.uid]
     if (!myData) return
@@ -164,6 +164,10 @@ export default function GamePlay({ user, roomCode, isHost, navigate }) {
     : (timeLeft / QUESTION_TIME) * 100
 
   const getChoiceClass = (choice) => {
+    if (game.status === 'reveal' && !hasAnswered) {
+      if (choice === question?.answer) return 'is-correct'
+      return 'is-dim'
+    }
     if (!hasAnswered) return ''
     if (choice === question?.answer) return 'is-correct'
     if (choice === myAnswer) return 'is-wrong'
@@ -193,7 +197,7 @@ export default function GamePlay({ user, roomCode, isHost, navigate }) {
             {/* Question */}
             {question && (
               <div className="question-card">
-                <div className="question-label">Solve for x</div>
+                <div className="question-label">{question.label ?? 'Solve for x'}</div>
                 <div className="equation">{question.equation}</div>
                 {game.status === 'question' && !hasAnswered && (
                   <div className="hint-text">💡 Hint: {question.hint}</div>
@@ -202,17 +206,17 @@ export default function GamePlay({ user, roomCode, isHost, navigate }) {
             )}
 
             {/* Choice boxes */}
-            {question && (game.status === 'question' || (hasAnswered && game.status === 'question')) && choices.length === 4 && (
+            {question && (game.status === 'question' || game.status === 'reveal') && choices.length === 4 && (
               <div className="choice-grid">
                 {choices.map((choice, i) => (
                   <button
                     key={i}
                     className={`choice-btn ${BOX_CLASSES[i]} ${getChoiceClass(choice)}`}
                     onClick={() => !hasAnswered && handleSubmit(choice)}
-                    disabled={hasAnswered}
+                    disabled={hasAnswered || game.status === 'reveal'}
                   >
                     {choice}
-                    {hasAnswered && choice === question.answer && ' ✓'}
+                    {(hasAnswered || game.status === 'reveal') && choice === question.answer && ' ✓'}
                     {hasAnswered && choice === myAnswer && choice !== question.answer && ' ✗'}
                   </button>
                 ))}

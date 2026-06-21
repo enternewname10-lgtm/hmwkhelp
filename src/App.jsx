@@ -72,9 +72,12 @@ function Sidebar({ user, userDoc, screen, navigate }) {
 
         {/* User row */}
         <div className="sidebar-user-row">
-          <img src={user?.photoURL} alt="avatar" className="avatar" width={26} height={26} />
+          {user?.photoURL
+            ? <img src={user.photoURL} alt="avatar" className="avatar" width={26} height={26} />
+            : <div style={{ width: 26, height: 26, borderRadius: '50%', background: 'var(--surface)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, flexShrink: 0 }}>👤</div>
+          }
           <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: 'var(--text-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {user?.displayName?.split(' ')[0]}
+            {user?.isAnonymous ? 'Guest' : user?.displayName?.split(' ')[0]}
           </span>
           <button
             className="btn btn-ghost btn-sm"
@@ -103,20 +106,25 @@ export default function App() {
       try {
         if (firebaseUser) {
           setUser(firebaseUser)
-          const ref = doc(db, 'users', firebaseUser.uid)
-          const snap = await getDoc(ref)
-          if (!snap.exists()) {
-            await setDoc(ref, {
-              displayName: firebaseUser.displayName,
-              photoURL:    firebaseUser.photoURL,
-              coins:       500,
-              totalWins:   0,
-              totalLosses: 0,
-              gamesPlayed: 0,
-              collection:  [],
-            })
+          if (firebaseUser.isAnonymous) {
+            setUserDoc({ coins: 0, totalWins: 0, totalLosses: 0, gamesPlayed: 0, collection: [], isGuest: true })
+            setScreen('home')
+          } else {
+            const ref = doc(db, 'users', firebaseUser.uid)
+            const snap = await getDoc(ref)
+            if (!snap.exists()) {
+              await setDoc(ref, {
+                displayName: firebaseUser.displayName,
+                photoURL:    firebaseUser.photoURL,
+                coins:       500,
+                totalWins:   0,
+                totalLosses: 0,
+                gamesPlayed: 0,
+                collection:  [],
+              })
+            }
+            setScreen('home')
           }
-          setScreen('home')
         } else {
           setUser(null)
           setUserDoc(null)
@@ -133,7 +141,7 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    if (!user) return
+    if (!user || user.isAnonymous) return
     const ref = doc(db, 'users', user.uid)
     const unsub = onSnapshot(ref, (snap) => {
       if (snap.exists()) setUserDoc(snap.data())
