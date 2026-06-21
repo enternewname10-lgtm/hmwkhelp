@@ -40,33 +40,54 @@ export default function Home({ user, userDoc, navigate }) {
       return
     }
     setCreating(true)
-    const code = generateRoomCode()
-    const gameRef = ref(rtdb, `games/${code}`)
-    await set(gameRef, {
-      host:              user.uid,
-      hostName:          user.displayName,
-      status:            'waiting',
-      mode:              modeChoice,
-      currentQuestion:   0,
-      questionStartTime: null,
-      questions:         questionMode === 'custom' ? customQuestions : shuffleQuestions(10),
-      players: { [user.uid]: myPlayerData() },
-    })
-    setCreating(false)
-    navigate('lobby', { roomCode: code, isHost: true, gameMode: modeChoice })
+    setError('')
+    try {
+      const code = generateRoomCode()
+      const gameRef = ref(rtdb, `games/${code}`)
+      await set(gameRef, {
+        host:              user.uid,
+        hostName:          user.isAnonymous ? `Guest#${user.uid.slice(-4).toUpperCase()}` : user.displayName,
+        status:            'waiting',
+        mode:              modeChoice,
+        currentQuestion:   0,
+        questionStartTime: null,
+        questions:         questionMode === 'custom' ? customQuestions : shuffleQuestions(10),
+        players: { [user.uid]: myPlayerData() },
+      })
+      navigate('lobby', { roomCode: code, isHost: true, gameMode: modeChoice })
+    } catch (err) {
+      console.error(err)
+      if (err.code === 'PERMISSION_DENIED') {
+        setError('Firebase permission denied. Go to Firebase Console → Realtime Database → Rules and allow authenticated writes.')
+      } else {
+        setError(`Failed to create room: ${err.message}`)
+      }
+    } finally {
+      setCreating(false)
+    }
   }
 
   const handleJoin = async () => {
     const code = joinCode.trim().toUpperCase()
     if (code.length !== 6) { setError('Room codes are 6 characters.'); return }
-    const gameRef = ref(rtdb, `games/${code}`)
-    const snap = await get(gameRef)
-    if (!snap.exists()) { setError('Room not found. Check the code and try again.'); return }
-    const game = snap.val()
-    if (game.status !== 'waiting') { setError('That game has already started.'); return }
-    const playerRef = ref(rtdb, `games/${code}/players/${user.uid}`)
-    await set(playerRef, myPlayerData())
-    navigate('lobby', { roomCode: code, isHost: false, gameMode: game.mode ?? 'regular' })
+    setError('')
+    try {
+      const gameRef = ref(rtdb, `games/${code}`)
+      const snap = await get(gameRef)
+      if (!snap.exists()) { setError('Room not found. Check the code and try again.'); return }
+      const game = snap.val()
+      if (game.status !== 'waiting') { setError('That game has already started.'); return }
+      const playerRef = ref(rtdb, `games/${code}/players/${user.uid}`)
+      await set(playerRef, myPlayerData())
+      navigate('lobby', { roomCode: code, isHost: false, gameMode: game.mode ?? 'regular' })
+    } catch (err) {
+      console.error(err)
+      if (err.code === 'PERMISSION_DENIED') {
+        setError('Firebase permission denied. Go to Firebase Console → Realtime Database → Rules and allow authenticated writes.')
+      } else {
+        setError(`Failed to join room: ${err.message}`)
+      }
+    }
   }
 
   const addQuestion = () => {
