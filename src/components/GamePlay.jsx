@@ -4,7 +4,6 @@ import { doc, updateDoc, increment } from 'firebase/firestore'
 import { rtdb, db } from '../firebase'
 import { wrongQuotes, correctQuotes, generateChoices } from '../data/questions'
 import { isAdmin } from '../utils/admin'
-import { getRarityByTime, rollRarity, getCatch, rarityColors as fishRarityColors } from '../data/fishing'
 
 const QUESTION_TIME = 20
 const REVEAL_TIME   = 5
@@ -19,7 +18,7 @@ export default function GamePlay({ user, roomCode, isHost, navigate }) {
   const [timeLeft,    setTimeLeft]    = useState(QUESTION_TIME)
   const [myResult,    setMyResult]    = useState(null)
   const [quote,       setQuote]       = useState('')
-  const [myCatch,     setMyCatch]     = useState(null)
+  const [pointsEarned, setPointsEarned] = useState(0)
   const timerRef = useRef(null)
 
   useEffect(() => {
@@ -37,7 +36,7 @@ export default function GamePlay({ user, roomCode, isHost, navigate }) {
     setHasAnswered(false)
     setMyResult(null)
     setQuote('')
-    setMyCatch(null)
+    setPointsEarned(0)
     setTimeLeft(QUESTION_TIME)
     const qIdx = game.currentQuestion ?? 0
     const q = game.questions?.[qIdx]
@@ -130,21 +129,15 @@ export default function GamePlay({ user, roomCode, isHost, navigate }) {
         : wrongQuotes[Math.floor(Math.random() * wrongQuotes.length)]
     )
 
-    let scoreGain = 0
-    let catchResult = null
-    if (correct) {
-      const rarity = isAdmin(user) ? 'Legendary' : rollRarity(getRarityByTime(timeLeft))
-      catchResult  = getCatch(rarity)
-      scoreGain    = catchResult.kg
-      setMyCatch(catchResult)
-    }
+    const scoreGain = correct ? Math.max(1, timeLeft) : 0
+    if (correct) setPointsEarned(scoreGain)
 
     const updates = {
-      [`players/${user.uid}/answers/${qIdx}`]: { submitted: true, correct, kg: scoreGain },
+      [`players/${user.uid}/answers/${qIdx}`]: { submitted: true, correct, points: scoreGain },
     }
     if (correct) {
       const prev = game.players?.[user.uid]?.score ?? 0
-      updates[`players/${user.uid}/score`]       = parseFloat((prev + scoreGain).toFixed(2))
+      updates[`players/${user.uid}/score`]       = prev + scoreGain
       updates[`players/${user.uid}/coinsEarned`] = (game.players?.[user.uid]?.coinsEarned ?? 0) + 50
     }
     await update(ref(rtdb, `games/${roomCode}`), updates)
@@ -225,17 +218,8 @@ export default function GamePlay({ user, roomCode, isHost, navigate }) {
             {game.status === 'question' && hasAnswered && (
               <div className={`answered-banner ${myResult}`}>
                 {myResult === 'correct' ? '✅ ' : '❌ '}{quote}
-                {myCatch && myCatch.kg > 0 && (
-                  <div style={{ marginTop:8, fontSize:18 }}>
-                    {myCatch.emoji} <strong>{myCatch.name}</strong>
-                    <span style={{ color: fishRarityColors[myCatch.rarity], marginLeft:8 }}>{myCatch.rarity}</span>
-                    <span style={{ marginLeft:8, color:'var(--cyan)' }}>+{myCatch.kg} pts</span>
-                  </div>
-                )}
-                {myCatch && myCatch.kg === 0 && (
-                  <div style={{ marginTop:8, fontSize:16, color:'var(--muted)' }}>
-                    {myCatch.emoji} {myCatch.name} — 0 pts
-                  </div>
+                {myResult === 'correct' && (
+                  <div style={{ marginTop:6, fontWeight:600 }}>+{pointsEarned} pts</div>
                 )}
               </div>
             )}
@@ -246,9 +230,9 @@ export default function GamePlay({ user, roomCode, isHost, navigate }) {
                 <div style={{ color:'var(--muted)', fontSize:14, fontWeight:700, marginBottom:8 }}>CORRECT ANSWER</div>
                 <div className="reveal-answer">x = {question.answer}</div>
                 <div style={{ color:'var(--cyan)', fontWeight:700, marginBottom:16 }}>{question.explanation}</div>
-                {myResult === 'correct' && myCatch && (
-                  <div style={{ color: fishRarityColors[myCatch.rarity] ?? 'var(--gold)', fontWeight:900, fontSize:20 }}>
-                    {myCatch.emoji} +{myCatch.kg} pts &nbsp;· +50 🪙
+                {myResult === 'correct' && (
+                  <div style={{ color:'var(--success)', fontWeight:700, fontSize:18, marginTop:4 }}>
+                    +{pointsEarned} pts &nbsp;· +50 🪙
                   </div>
                 )}
                 {myResult === 'incorrect' && (
