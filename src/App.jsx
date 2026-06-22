@@ -107,7 +107,7 @@ export default function App() {
         if (firebaseUser) {
           setUser(firebaseUser)
           if (firebaseUser.isAnonymous) {
-            setUserDoc({ coins: 0, totalWins: 0, totalLosses: 0, gamesPlayed: 0, collection: [], isGuest: true })
+            setUserDoc({ coins: 1400, totalWins: 0, totalLosses: 0, gamesPlayed: 0, collection: [], isGuest: true })
             setScreen('home')
           } else {
             const ref = doc(db, 'users', firebaseUser.uid)

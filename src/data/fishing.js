@@ -7,32 +7,38 @@ export const catches = {
     { id: 'bag',     name: 'Plastic Bag',      emoji: '🛍️', kg: 0 },
   ],
   Common: [
-    { id: 'bluegill',  name: 'Bluegill',        emoji: '🐟', minKg: 0.2, maxKg: 1.0 },
-    { id: 'sunfish',   name: 'Sunfish',          emoji: '🐠', minKg: 0.3, maxKg: 1.5 },
-    { id: 'perch',     name: 'Yellow Perch',     emoji: '🐡', minKg: 0.2, maxKg: 0.9 },
-    { id: 'crappie',   name: 'Crappie',          emoji: '🐟', minKg: 0.3, maxKg: 1.2 },
-    { id: 'smelt',     name: 'Rainbow Smelt',    emoji: '🐠', minKg: 0.1, maxKg: 0.5 },
-    { id: 'roach',     name: 'Common Roach',     emoji: '🐡', minKg: 0.2, maxKg: 1.0 },
-    { id: 'bream',     name: 'Bream',            emoji: '🐟', minKg: 0.3, maxKg: 1.4 },
+    { id: 'bluegill',  name: 'Bluegill',        emoji: '🐟', minKg: 2,  maxKg: 8  },
+    { id: 'sunfish',   name: 'Sunfish',          emoji: '🐠', minKg: 2,  maxKg: 9  },
+    { id: 'perch',     name: 'Yellow Perch',     emoji: '🐡', minKg: 1,  maxKg: 7  },
+    { id: 'crappie',   name: 'Crappie',          emoji: '🐟', minKg: 2,  maxKg: 8  },
+    { id: 'smelt',     name: 'Rainbow Smelt',    emoji: '🐠', minKg: 1,  maxKg: 6  },
+    { id: 'roach',     name: 'Common Roach',     emoji: '🐡', minKg: 2,  maxKg: 7  },
+    { id: 'bream',     name: 'Bream',            emoji: '🐟', minKg: 2,  maxKg: 8  },
   ],
   Rare: [
-    { id: 'bass',    name: 'Largemouth Bass',  emoji: '🐟', minKg: 2.0, maxKg: 6.0 },
-    { id: 'trout',   name: 'Rainbow Trout',    emoji: '🐠', minKg: 1.5, maxKg: 5.0 },
-    { id: 'carp',    name: 'Mirror Carp',      emoji: '🐡', minKg: 3.0, maxKg: 9.0 },
-    { id: 'walleye', name: 'Walleye',          emoji: '🐟', minKg: 1.8, maxKg: 4.5 },
-    { id: 'zander',  name: 'Zander',           emoji: '🐠', minKg: 2.5, maxKg: 7.0 },
+    { id: 'bass',    name: 'Largemouth Bass',  emoji: '🐟', minKg: 15, maxKg: 35 },
+    { id: 'trout',   name: 'Rainbow Trout',    emoji: '🐠', minKg: 12, maxKg: 30 },
+    { id: 'carp',    name: 'Mirror Carp',      emoji: '🐡', minKg: 18, maxKg: 40 },
+    { id: 'walleye', name: 'Walleye',          emoji: '🐟', minKg: 14, maxKg: 32 },
+    { id: 'zander',  name: 'Zander',           emoji: '🐠', minKg: 16, maxKg: 36 },
   ],
   Epic: [
-    { id: 'salmon',  name: 'King Salmon',      emoji: '🦈', minKg: 8.0,  maxKg: 20.0 },
-    { id: 'pike',    name: 'Northern Pike',    emoji: '🐟', minKg: 7.0,  maxKg: 18.0 },
-    { id: 'catfish', name: 'Giant Catfish',    emoji: '🐠', minKg: 10.0, maxKg: 28.0 },
-    { id: 'muskie',  name: 'Muskellunge',      emoji: '🐡', minKg: 9.0,  maxKg: 22.0 },
+    { id: 'salmon',  name: 'King Salmon',      emoji: '🦈', minKg: 55,  maxKg: 90  },
+    { id: 'pike',    name: 'Northern Pike',    emoji: '🐟', minKg: 50,  maxKg: 85  },
+    { id: 'catfish', name: 'Giant Catfish',    emoji: '🐠', minKg: 60,  maxKg: 100 },
+    { id: 'muskie',  name: 'Muskellunge',      emoji: '🐡', minKg: 55,  maxKg: 95  },
   ],
   Legendary: [
-    { id: 'tuna',     name: 'Bluefin Tuna',      emoji: '🐋', minKg: 50.0,  maxKg: 200.0 },
-    { id: 'marlin',   name: 'Blue Marlin',        emoji: '🦈', minKg: 80.0,  maxKg: 300.0 },
-    { id: 'sturgeon', name: 'Beluga Sturgeon',    emoji: '🐊', minKg: 40.0,  maxKg: 120.0 },
-    { id: 'arapaima', name: 'Arapaima',           emoji: '🐉', minKg: 60.0,  maxKg: 180.0 },
+    { id: 'tuna',     name: 'Bluefin Tuna',    emoji: '🐋', minKg: 100, maxKg: 140 },
+    { id: 'marlin',   name: 'Blue Marlin',      emoji: '🦈', minKg: 110, maxKg: 150 },
+    { id: 'sturgeon', name: 'Beluga Sturgeon',  emoji: '🐊', minKg: 95,  maxKg: 130 },
+    { id: 'arapaima', name: 'Arapaima',         emoji: '🐉', minKg: 105, maxKg: 145 },
+  ],
+  Mythical: [
+    { id: 'kraken',    name: 'Kraken',          emoji: '🦑', minKg: 300, maxKg: 500 },
+    { id: 'leviathan', name: 'Leviathan',       emoji: '🌊', minKg: 350, maxKg: 600 },
+    { id: 'seadragon', name: 'Sea Dragon',      emoji: '🐲', minKg: 400, maxKg: 700 },
+    { id: 'goldenkoi', name: 'Golden Koi',      emoji: '🎏', minKg: 250, maxKg: 450 },
   ],
 }
 
@@ -42,27 +48,30 @@ export const rarityColors = {
   Rare:      '#3b82f6',
   Epic:      '#a855f7',
   Legendary: '#f97316',
+  Mythical:  '#fbbf24',
 }
 
 // Rarity chances by time left (faster answer = better rarity)
 export function getRarityByTime(timeLeft) {
   const t = Math.min(1, timeLeft / 20)
   return {
-    trash:     Math.max(0,    0.20 - t * 0.18),
-    Common:    Math.max(0,    0.65 - t * 0.25),
-    Rare:      0.10 + t * 0.10,
-    Epic:      0.04 + t * 0.08,
-    Legendary: 0.01 + t * 0.09,
+    trash:     Math.max(0, 0.20 - t * 0.18),
+    Common:    Math.max(0, 0.60 - t * 0.22),
+    Rare:      0.10 + t * 0.09,
+    Epic:      0.04 + t * 0.07,
+    Legendary: 0.01 + t * 0.06,
+    Mythical:  t * 0.02,
   }
 }
 
 // Rarity chances for fishing mode (answer correct = cast)
 export const fishingRarityChances = {
   trash:     0.18,
-  Common:    0.50,
+  Common:    0.49,
   Rare:      0.20,
   Epic:      0.09,
   Legendary: 0.03,
+  Mythical:  0.01,
 }
 
 export function rollRarity(chances) {
